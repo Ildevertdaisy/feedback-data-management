@@ -3,27 +3,27 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { apiFetch } from "@/lib/api";
 
-export const useDeleteFruit = (id?: number) => {
+export const useDeleteEvent = (id?: number) => {
   const queryClient = useQueryClient();
 
   return useMutation<unknown, Error>({
     mutationFn: async () => {
       if (!id) {
-        throw new Error("Fruit id is required");
+        throw new Error("Event id is required");
       }
 
-      await apiFetch(`/fruits/${id}`, {
+      await apiFetch(`/events/${id}`, {
         method: "DELETE",
       });
     },
     onSuccess: () => {
-      toast.success("Fruit supprimé");
-      queryClient.invalidateQueries({ queryKey: ["fruit", { id }] });
-      queryClient.invalidateQueries({ queryKey: ["fruits"] });
+      toast.success("Évènement supprimé");
+      queryClient.invalidateQueries({ queryKey: ["event", { id }] });
+      queryClient.invalidateQueries({ queryKey: ["events"] });
       queryClient.invalidateQueries({ queryKey: ["summary"] });
     },
     onError: () => {
-      toast.error("Impossible de supprimer le fruit");
+      toast.error("Impossible de supprimer l'évènement");
     },
   });
 };

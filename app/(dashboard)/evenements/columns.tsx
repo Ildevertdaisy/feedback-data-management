@@ -3,13 +3,13 @@
 import { ArrowUpDown } from "lucide-react";
 import { ColumnDef } from "@tanstack/react-table";
 
-import { Fruit } from "@/lib/types";
+import { Event } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 
 import { Actions } from "./actions";
 
-export type ResponseType = Fruit;
+export type ResponseType = Event;
 
 export const columns: ColumnDef<ResponseType>[] = [
   {
@@ -35,32 +35,25 @@ export const columns: ColumnDef<ResponseType>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "firstname",
+    accessorKey: "type",
     header: ({ column }) => (
       <Button
         variant="ghost"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
-        Prénom
+        Type
         <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
   },
   {
-    accessorKey: "indo",
-    header: "Indo",
-  },
-  {
-    accessorKey: "status",
-    header: "Statut",
-  },
-  {
-    accessorKey: "location",
-    header: "Localisation",
-  },
-  {
-    accessorKey: "tagui_point",
-    header: "Point Tagui",
+    accessorKey: "date",
+    header: "Date",
+    cell: ({ row }) => {
+      const value = row.original.date;
+      if (!value) return "-";
+      return new Date(value).toLocaleString();
+    },
   },
   {
     id: "actions",

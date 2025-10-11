@@ -2,15 +2,15 @@ import { IconType } from "react-icons";
 import { VariantProps, cva } from "class-variance-authority";
 
 import { Skeleton } from "./ui/skeleton";
-import { cn, formatCurrency, formatPercentage } from "@/lib/utils";
 import { CountUp } from "@/components/count-up";
-import { 
+import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 const boxVariant = cva(
   "shrink-0 rounded-md p-3",
@@ -21,14 +21,13 @@ const boxVariant = cva(
         success: "bg-emerald-500/20",
         danger: "bg-rose-500/20",
         warning: "bg-yellow-500/20",
-      }
+      },
     },
     defaultVariants: {
       variant: "default",
     },
   },
 );
-
 
 const iconVariant = cva(
   "size-6",
@@ -39,7 +38,7 @@ const iconVariant = cva(
         success: "fill-emerald-500",
         danger: "fill-rose-500",
         warning: "fill-yellow-500",
-      }
+      },
     },
     defaultVariants: {
       variant: "default",
@@ -54,9 +53,15 @@ interface DataCardProps extends BoxVariants, IconVariants {
   icon: IconType;
   title: string;
   value?: number;
-  dateRange: string;
-  percentageChange?: number;
-};
+  dateRange?: string;
+  percentageChange?: number | null;
+  formatter?: (value: number) => string;
+  decimals?: number;
+  subtitle?: string;
+}
+
+const defaultFormatter = (value: number) =>
+  new Intl.NumberFormat("fr-FR").format(value);
 
 export const DataCard = ({
   icon: Icon,
@@ -64,18 +69,28 @@ export const DataCard = ({
   value = 0,
   variant,
   dateRange,
-  percentageChange = 0,
+  percentageChange,
+  formatter = defaultFormatter,
+  decimals = 0,
+  subtitle,
 }: DataCardProps) => {
+  const changeIsVisible = typeof percentageChange === "number";
+
   return (
     <Card className="border-none drop-shadow-sm">
       <CardHeader className="flex flex-row items-center justify-between gap-x-4">
-        <div className="space-y-2">
-          <CardTitle className="text-2xl line-clamp-1">
-            {title}
-          </CardTitle>
-          <CardDescription className="line-clamp1">
-            {dateRange}
-          </CardDescription>
+        <div className="space-y-1">
+          <CardTitle className="text-2xl line-clamp-1">{title}</CardTitle>
+          {dateRange && (
+            <CardDescription className="line-clamp-1">
+              {dateRange}
+            </CardDescription>
+          )}
+          {subtitle && !dateRange && (
+            <CardDescription className="line-clamp-1">
+              {subtitle}
+            </CardDescription>
+          )}
         </div>
         <div className={cn(boxVariant({ variant }))}>
           <Icon className={cn(iconVariant({ variant }))} />
@@ -87,18 +102,22 @@ export const DataCard = ({
             preserveValue
             start={0}
             end={value}
-            decimals={2}
-            decimalPlaces={2}
-            formattingFn={formatCurrency}
+            decimals={decimals}
+            decimalPlaces={decimals}
+            formattingFn={formatter}
           />
         </h1>
-        <p className={cn(
-          "text-muted-foreground text-sm line-clamp-1",
-          percentageChange > 0 && "text-emerald-500",
-          percentageChange < 0 && "text-rose-500",
-        )}>
-          {formatPercentage(percentageChange, { addPrefix: true })} from last period
-        </p>
+        {changeIsVisible && (
+          <p
+            className={cn(
+              "text-muted-foreground text-sm line-clamp-1",
+              (percentageChange ?? 0) > 0 && "text-emerald-500",
+              (percentageChange ?? 0) < 0 && "text-rose-500",
+            )}
+          >
+            {percentageChange?.toFixed(2)}% vs période précédente
+          </p>
+        )}
       </CardContent>
     </Card>
   );

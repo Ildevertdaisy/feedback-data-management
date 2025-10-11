@@ -1,32 +1,28 @@
 import { toast } from "sonner";
-import { InferRequestType, InferResponseType } from "hono";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { client } from "@/lib/hono";
-
-type ResponseType = InferResponseType<typeof client.api.accounts.$post>;
-type RequestType = InferRequestType<typeof client.api.accounts.$post>["json"];
+import { apiFetch } from "@/lib/api";
+import { Fruit } from "@/lib/types";
+import { FruitSubmitValues } from "@/features/fruits/components/fruit-form";
 
 export const useCreateFruit = () => {
   const queryClient = useQueryClient();
 
-  const mutation = useMutation<
-    ResponseType,
-    Error,
-    RequestType
-  >({
+  return useMutation<Fruit, Error, FruitSubmitValues>({
     mutationFn: async (json) => {
-      const response = await client.api.accounts.$post({ json });
-      return await response.json();
+      const fruit = await apiFetch<Fruit>("/fruits", {
+        method: "POST",
+        body: JSON.stringify(json),
+      });
+
+      return fruit;
     },
     onSuccess: () => {
-      toast.success("Account created");
-      queryClient.invalidateQueries({ queryKey: ["accounts"] });
+      toast.success("Fruit créé");
+      queryClient.invalidateQueries({ queryKey: ["fruits"] });
     },
     onError: () => {
-      toast.error("Failed to create account");
+      toast.error("Impossible de créer le fruit");
     },
   });
-
-  return mutation;
 };

@@ -7,26 +7,26 @@ type BulkDeletePayload = {
   ids: number[];
 };
 
-export const useBulkDeleteFruits = () => {
+export const useBulkDeleteEvents = () => {
   const queryClient = useQueryClient();
 
   return useMutation<unknown, Error, BulkDeletePayload>({
     mutationFn: async ({ ids }) => {
       await Promise.all(
         ids.map((id) =>
-          apiFetch(`/fruits/${id}`, {
+          apiFetch(`/events/${id}`, {
             method: "DELETE",
           }),
         ),
       );
     },
     onSuccess: () => {
-      toast.success("Fruits supprimés");
-      queryClient.invalidateQueries({ queryKey: ["fruits"] });
+      toast.success("Évènements supprimés");
+      queryClient.invalidateQueries({ queryKey: ["events"] });
       queryClient.invalidateQueries({ queryKey: ["summary"] });
     },
     onError: () => {
-      toast.error("Impossible de supprimer les fruits sélectionnés");
+      toast.error("Impossible de supprimer les évènements sélectionnés");
     },
   });
 };

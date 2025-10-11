@@ -2,9 +2,9 @@
 
 import { Loader2, Plus } from "lucide-react";
 
-import { useNewFruit } from "@/features/fruits/hooks/use-new-fruit";
-import { useGetFruits } from "@/features/fruits/api/use-get-fruits";
-import { useBulkDeleteFruits } from "@/features/fruits/api/use-bulk-delete-fruits";
+import { useNewEvent } from "@/features/events/hooks/use-new-event";
+import { useGetEvents } from "@/features/events/api/use-get-events";
+import { useBulkDeleteEvents } from "@/features/events/api/use-bulk-delete-events";
 
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/data-table";
@@ -18,15 +18,15 @@ import {
 
 import { columns } from "./columns";
 
-const FruitsPage = () => {
-  const newFruit = useNewFruit();
-  const deleteFruits = useBulkDeleteFruits();
-  const fruitsQuery = useGetFruits();
-  const fruits = fruitsQuery.data || [];
+const EventsPage = () => {
+  const newEvent = useNewEvent();
+  const deleteEvents = useBulkDeleteEvents();
+  const eventsQuery = useGetEvents();
+  const events = eventsQuery.data || [];
 
-  const isDisabled = fruitsQuery.isLoading || deleteFruits.isPending;
+  const isDisabled = eventsQuery.isLoading || deleteEvents.isPending;
 
-  if (fruitsQuery.isLoading) {
+  if (eventsQuery.isLoading) {
     return (
       <div className="max-w-screen-2xl mx-auto w-full pb-10 -mt-24">
         <Card className="border-none drop-shadow-sm">
@@ -47,20 +47,20 @@ const FruitsPage = () => {
     <div className="max-w-screen-2xl mx-auto w-full pb-10 -mt-24">
       <Card className="border-none drop-shadow-sm">
         <CardHeader className="gap-y-2 lg:flex-row lg:items-center lg:justify-between">
-          <CardTitle className="text-xl line-clamp-1">Fruits</CardTitle>
-          <Button onClick={newFruit.onOpen} size="sm">
+          <CardTitle className="text-xl line-clamp-1">Évènements</CardTitle>
+          <Button onClick={newEvent.onOpen} size="sm">
             <Plus className="size-4 mr-2" />
-            Ajouter un fruit
+            Ajouter un évènement
           </Button>
         </CardHeader>
         <CardContent>
           <DataTable
-            filterKey="firstname"
+            filterKey="type"
             columns={columns}
-            data={fruits}
+            data={events}
             onDelete={(row) => {
               const ids = row.map((r) => Number(r.original.id));
-              deleteFruits.mutate({ ids });
+              deleteEvents.mutate({ ids });
             }}
             disabled={isDisabled}
           />
@@ -70,4 +70,4 @@ const FruitsPage = () => {
   );
 };
 
-export default FruitsPage;
+export default EventsPage;
