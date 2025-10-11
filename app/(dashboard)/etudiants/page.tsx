@@ -55,7 +55,7 @@ const StudentsPage = () => {
         </CardHeader>
         <CardContent>
           <DataTable
-            filterKey="firstname"
+            filterKeys={["firstname"]}
             columns={columns}
             data={students}
             onDelete={(row) => {

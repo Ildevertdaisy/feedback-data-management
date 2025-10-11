@@ -12,6 +12,7 @@ export type Fruit = {
   status: number | null;
   location: string | null;
   tagui_point: string | null;
+  studentFirstname?: string | null;
 };
 
 export type Event = {
@@ -42,6 +43,7 @@ export type StudentFollowup = {
   description: string | null;
   fruit_name: string | null;
   created_at: string | null;
+  studentFirstname?: string | null;
 };
 
 export type FruitFollowup = {
@@ -49,4 +51,6 @@ export type FruitFollowup = {
   fruit_id: number;
   student_id: number;
   last_date: string | null;
+  studentFirstname?: string | null;
+  fruitFirstname?: string | null;
 };
