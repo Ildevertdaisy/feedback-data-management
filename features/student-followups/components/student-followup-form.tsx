@@ -4,7 +4,6 @@ import { Trash } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -21,52 +20,52 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { DatePicker } from "@/components/date-picker";
 import { useGetStudents } from "@/features/students/api/use-get-students";
 
 const formSchema = z.object({
-  firstname: z
-    .string({ required_error: "Le prénom est requis" })
-    .min(1, "Le prénom est requis"),
-  indo: z.string().optional(),
-  status: z.string().optional(),
-  location: z.string().optional(),
-  tagui_point: z.string().optional(),
+  student_id: z.string({ required_error: "L'étudiant est requis" }),
+  fruit_name: z.string().optional(),
+  description: z.string().optional(),
+  created_at: z.string().optional(),
 });
 
-export type FruitFormValues = z.infer<typeof formSchema>;
+export type StudentFollowupFormValues = z.infer<typeof formSchema>;
 
-export type FruitSubmitValues = {
-  firstname: string;
-  indo: number | null;
-  status: number | null;
-  location: string | null;
-  tagui_point: string | null;
+export type StudentFollowupSubmitValues = {
+  student_id: number;
+  fruit_name: string | null;
+  description: string | null;
+  created_at: string | null;
 };
 
 type Props = {
   id?: number;
-  defaultValues?: FruitFormValues;
-  onSubmit: (values: FruitSubmitValues) => void;
+  defaultValues?: StudentFollowupFormValues;
+  onSubmit: (values: StudentFollowupSubmitValues) => void;
   onDelete?: () => void;
   disabled?: boolean;
 };
 
-const transformValues = (values: FruitFormValues): FruitSubmitValues => ({
-  firstname: values.firstname,
-  indo: values.indo ? Number(values.indo) : null,
-  status: values.status ? Number(values.status) : null,
-  location: values.location ? values.location : null,
-  tagui_point: values.tagui_point ? values.tagui_point : null,
+const transformValues = (
+  values: StudentFollowupFormValues,
+): StudentFollowupSubmitValues => ({
+  student_id: Number(values.student_id),
+  fruit_name: values.fruit_name ? values.fruit_name : null,
+  description: values.description ? values.description : null,
+  created_at: values.created_at ? values.created_at : null,
 });
 
-export const FruitForm = ({
+export const StudentFollowupForm = ({
   id,
   defaultValues,
   onSubmit,
   onDelete,
   disabled,
 }: Props) => {
-  const form = useForm<FruitFormValues>({
+  const form = useForm<StudentFollowupFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues,
   });
@@ -82,7 +81,7 @@ export const FruitForm = ({
     [studentsQuery.data],
   );
 
-  const handleSubmit = (values: FruitFormValues) => {
+  const handleSubmit = (values: StudentFollowupFormValues) => {
     onSubmit(transformValues(values));
   };
 
@@ -94,32 +93,15 @@ export const FruitForm = ({
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 pt-4">
         <FormField
-          name="firstname"
+          name="student_id"
           control={form.control}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Nom du fruit</FormLabel>
-              <FormControl>
-                <Input
-                  disabled={disabled}
-                  placeholder="Entrez le nom du fruit"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          name="indo"
-          control={form.control}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Étudiant associé</FormLabel>
+              <FormLabel>Étudiant</FormLabel>
               <Select
                 disabled={disabled || studentsQuery.isLoading}
                 onValueChange={field.onChange}
-                value={field.value ?? ""}
+                value={field.value}
               >
                 <FormControl>
                   <SelectTrigger>
@@ -145,16 +127,15 @@ export const FruitForm = ({
           )}
         />
         <FormField
-          name="status"
+          name="fruit_name"
           control={form.control}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Statut</FormLabel>
+              <FormLabel>Nom du fruit</FormLabel>
               <FormControl>
                 <Input
                   disabled={disabled}
-                  placeholder="Statut (numérique)"
-                  type="number"
+                  placeholder="Associez un fruit"
                   {...field}
                 />
               </FormControl>
@@ -163,15 +144,16 @@ export const FruitForm = ({
           )}
         />
         <FormField
-          name="location"
+          name="description"
           control={form.control}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Localisation</FormLabel>
+              <FormLabel>Description</FormLabel>
               <FormControl>
-                <Input
+                <Textarea
                   disabled={disabled}
-                  placeholder="Ville ou lieu"
+                  placeholder="Notes de suivi"
+                  className="min-h-[120px]"
                   {...field}
                 />
               </FormControl>
@@ -180,18 +162,18 @@ export const FruitForm = ({
           )}
         />
         <FormField
-          name="tagui_point"
+          name="created_at"
           control={form.control}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Point Tagui</FormLabel>
-              <FormControl>
-                <Input
-                  disabled={disabled}
-                  placeholder="Point de contact"
-                  {...field}
-                />
-              </FormControl>
+              <FormLabel>Date du suivi</FormLabel>
+              <DatePicker
+                disabled={disabled}
+                value={field.value ? new Date(field.value) : undefined}
+                onChange={(date) =>
+                  field.onChange(date ? date.toISOString() : "")
+                }
+              />
               <FormMessage />
             </FormItem>
           )}

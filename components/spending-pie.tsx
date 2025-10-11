@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FileSearch, Loader2, PieChart, Radar, Target } from "lucide-react";
 
 import { 
@@ -19,20 +19,29 @@ import { RadarVariant } from "@/components/radar-variant";
 import { RadialVariant } from "@/components/radial-variant";
 import { Skeleton } from "./ui/skeleton";
 
+type ChartType = "pie" | "radar" | "radial";
+
 type Props = {
   data?: {
     name: string;
     value: number;
   }[];
+  initialType?: ChartType;
 };
 
-export const SpendingPie = ({ data = [] }: Props) => {
-  const [chartType, setChartType] = useState("pie");
+export const SpendingPie = ({ data = [], initialType = "pie" }: Props) => {
+  const [chartType, setChartType] = useState<ChartType>(initialType);
+
+  useEffect(() => {
+    if (initialType !== chartType) {
+      setChartType(initialType);
+    }
+  }, [initialType, chartType]);
 
   const onTypeChange = (type: string) => {
     // TODO: Add paywall
 
-    setChartType(type);
+    setChartType(type as ChartType);
   };
 
   return (
@@ -41,10 +50,7 @@ export const SpendingPie = ({ data = [] }: Props) => {
         <CardTitle className="text-xl line-clamp-1">
           Categories
         </CardTitle>
-        <Select
-          defaultValue={chartType}
-          onValueChange={onTypeChange}
-        >
+        <Select value={chartType} onValueChange={onTypeChange}>
           <SelectTrigger className="lg:w-auto h-9 rounded-md px-3">
             <SelectValue placeholder="Chart type" />
           </SelectTrigger>

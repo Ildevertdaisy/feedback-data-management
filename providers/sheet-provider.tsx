@@ -10,6 +10,10 @@ import { EditStudentSheet } from "@/features/students/components/edit-student-sh
 
 import { NewEventSheet } from "@/features/events/components/new-event-sheet";
 import { EditEventSheet } from "@/features/events/components/edit-event-sheet";
+import { NewStudentFollowupSheet } from "@/features/student-followups/components/new-student-followup-sheet";
+import { EditStudentFollowupSheet } from "@/features/student-followups/components/edit-student-followup-sheet";
+import { NewFruitFollowupSheet } from "@/features/fruit-followups/components/new-fruit-followup-sheet";
+import { EditFruitFollowupSheet } from "@/features/fruit-followups/components/edit-fruit-followup-sheet";
 
 export const SheetProvider = () => {
   const isMounted = useMountedState();
@@ -26,6 +30,12 @@ export const SheetProvider = () => {
 
       <NewEventSheet />
       <EditEventSheet />
+
+      <NewStudentFollowupSheet />
+      <EditStudentFollowupSheet />
+
+      <NewFruitFollowupSheet />
+      <EditFruitFollowupSheet />
     </>
   );
 };

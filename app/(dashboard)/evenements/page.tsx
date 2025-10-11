@@ -55,7 +55,7 @@ const EventsPage = () => {
         </CardHeader>
         <CardContent>
           <DataTable
-            filterKey="type"
+            filterKeys={["type"]}
             columns={columns}
             data={events}
             onDelete={(row) => {

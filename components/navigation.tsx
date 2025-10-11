@@ -30,6 +30,14 @@ const routes = [
     href: "/evenements",
     label: "Évènements",
   },
+  {
+    href: "/suivis-etudiants",
+    label: "Suivis étudiants",
+  },
+  {
+    href: "/suivis-fruits",
+    label: "Suivis fruits",
+  },
 ];
 
 export const Navigation = () => {

@@ -30,7 +30,7 @@ import { Button } from "@/components/ui/button"
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
-  filterKey: string
+  filterKeys: string[]
   onDelete: (rows: Row<TData>[]) => void;
   disabled?: boolean;
 }
@@ -38,7 +38,7 @@ interface DataTableProps<TData, TValue> {
 export function DataTable<TData, TValue>({
   columns,
   data,
-  filterKey,
+  filterKeys,
   onDelete,
   disabled,
 }: DataTableProps<TData, TValue>) {
@@ -52,6 +52,8 @@ export function DataTable<TData, TValue>({
     []
   )
   const [rowSelection, setRowSelection] = React.useState({})
+
+  const searchableColumns = filterKeys.length ? filterKeys : []
 
   const table = useReactTable({
     data,
@@ -75,11 +77,19 @@ export function DataTable<TData, TValue>({
       <ConfirmDialog />
       <div className="flex items-center py-4">
         <Input
-          placeholder={`Filter ${filterKey}...`}
-          value={(table.getColumn(filterKey)?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn(filterKey)?.setFilterValue(event.target.value)
+          placeholder={searchableColumns.length > 1 ? "Rechercher..." : `Filtrer ${searchableColumns[0] ?? ""}...`}
+          value={
+            (searchableColumns.length
+              ? (table.getColumn(searchableColumns[0])?.getFilterValue() as string)
+              : "") ?? ""
           }
+          onChange={(event) => {
+            const value = event.target.value
+
+            searchableColumns.forEach((key) => {
+              table.getColumn(key)?.setFilterValue(value)
+            })
+          }}
           className="max-w-sm"
         />
         {table.getFilteredSelectedRowModel().rows.length > 0 && (
