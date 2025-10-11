@@ -3,13 +3,13 @@
 import { ArrowUpDown } from "lucide-react";
 import { ColumnDef } from "@tanstack/react-table";
 
-import { Fruit } from "@/lib/types";
+import { Student } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 
 import { Actions } from "./actions";
 
-export type ResponseType = Fruit;
+export type ResponseType = Student;
 
 export const columns: ColumnDef<ResponseType>[] = [
   {
@@ -47,20 +47,12 @@ export const columns: ColumnDef<ResponseType>[] = [
     ),
   },
   {
-    accessorKey: "indo",
-    header: "Indo",
+    accessorKey: "gender",
+    header: "Genre",
   },
   {
-    accessorKey: "status",
-    header: "Statut",
-  },
-  {
-    accessorKey: "location",
-    header: "Localisation",
-  },
-  {
-    accessorKey: "tagui_point",
-    header: "Point Tagui",
+    accessorKey: "jdsn",
+    header: "JDSN",
   },
   {
     id: "actions",

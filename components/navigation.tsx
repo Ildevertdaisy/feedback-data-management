@@ -16,23 +16,7 @@ import {
 const routes = [
   {
     href: "/",
-    label: "Overview",
-  },
-  {
-    href: "/transactions",
-    label: "Transactions",
-  },
-  {
-    href: "/accounts",
-    label: "Accounts",
-  },
-  {
-    href: "/categories",
-    label: "Categories",
-  },
-  {
-    href: "/settings",
-    label: "Settings",
+    label: "Aperçu",
   },
   {
     href: "/fruits",
@@ -40,11 +24,11 @@ const routes = [
   },
   {
     href: "/etudiants",
-    label: "Etudiants",
+    label: "Étudiants",
   },
   {
-    href: "/évènements",
-    label: "Evènements",
+    href: "/evenements",
+    label: "Évènements",
   },
 ];
 

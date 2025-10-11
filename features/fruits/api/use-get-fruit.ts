@@ -1,24 +1,19 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { client } from "@/lib/hono";
+import { apiFetch } from "@/lib/api";
+import { Fruit } from "@/lib/types";
 
-export const useGetFruits = (id?: string) => {
-  const query = useQuery({
+export const useGetFruit = (id?: number) => {
+  return useQuery({
     enabled: !!id,
-    queryKey: ["account", { id }],
+    queryKey: ["fruit", { id }],
     queryFn: async () => {
-      const response = await client.api.accounts[":id"].$get({
-        param: { id },
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch account");
+      if (!id) {
+        throw new Error("Fruit id is required");
       }
 
-      const { data } = await response.json();
-      return data;
+      const fruit = await apiFetch<Fruit>(`/fruits/${id}`);
+      return fruit;
     },
   });
-
-  return query;
 };

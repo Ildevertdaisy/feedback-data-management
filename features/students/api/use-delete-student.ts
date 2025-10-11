@@ -3,27 +3,27 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { apiFetch } from "@/lib/api";
 
-export const useDeleteFruit = (id?: number) => {
+export const useDeleteStudent = (id?: number) => {
   const queryClient = useQueryClient();
 
   return useMutation<unknown, Error>({
     mutationFn: async () => {
       if (!id) {
-        throw new Error("Fruit id is required");
+        throw new Error("Student id is required");
       }
 
-      await apiFetch(`/fruits/${id}`, {
+      await apiFetch(`/students/${id}`, {
         method: "DELETE",
       });
     },
     onSuccess: () => {
-      toast.success("Fruit supprimé");
-      queryClient.invalidateQueries({ queryKey: ["fruit", { id }] });
-      queryClient.invalidateQueries({ queryKey: ["fruits"] });
+      toast.success("Étudiant supprimé");
+      queryClient.invalidateQueries({ queryKey: ["student", { id }] });
+      queryClient.invalidateQueries({ queryKey: ["students"] });
       queryClient.invalidateQueries({ queryKey: ["summary"] });
     },
     onError: () => {
-      toast.error("Impossible de supprimer le fruit");
+      toast.error("Impossible de supprimer l'étudiant");
     },
   });
 };

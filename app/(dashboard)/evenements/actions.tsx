@@ -2,8 +2,8 @@
 
 import { Edit, MoreHorizontal, Trash } from "lucide-react";
 
-import { useOpenFruit } from "@/features/fruits/hooks/use-open-fruit";
-import { useDeleteFruit } from "@/features/fruits/api/use-delete-fruit";
+import { useOpenEvent } from "@/features/events/hooks/use-open-event";
+import { useDeleteEvent } from "@/features/events/api/use-delete-event";
 
 import { useConfirm } from "@/hooks/use-confirm";
 import { Button } from "@/components/ui/button";
@@ -20,12 +20,12 @@ type Props = {
 
 export const Actions = ({ id }: Props) => {
   const [ConfirmDialog, confirm] = useConfirm(
-    "Supprimer ce fruit ?",
+    "Supprimer cet évènement ?",
     "Cette action est irréversible."
   );
 
-  const deleteMutation = useDeleteFruit(id);
-  const { onOpen } = useOpenFruit();
+  const deleteMutation = useDeleteEvent(id);
+  const { onOpen } = useOpenEvent();
 
   const handleDelete = async () => {
     const ok = await confirm();

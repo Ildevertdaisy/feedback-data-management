@@ -1,38 +1,34 @@
 import { toast } from "sonner";
-import { InferRequestType, InferResponseType } from "hono";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { client } from "@/lib/hono";
+import { apiFetch } from "@/lib/api";
+import { Fruit } from "@/lib/types";
+import { FruitSubmitValues } from "@/features/fruits/components/fruit-form";
 
-type ResponseType = InferResponseType<typeof client.api.accounts[":id"]["$patch"]>;
-type RequestType = InferRequestType<typeof client.api.accounts[":id"]["$patch"]>["json"];
-
-export const useEditFruit = (id?: string) => {
+export const useEditFruit = (id?: number) => {
   const queryClient = useQueryClient();
 
-  const mutation = useMutation<
-    ResponseType,
-    Error,
-    RequestType
-  >({
+  return useMutation<Fruit, Error, FruitSubmitValues>({
     mutationFn: async (json) => {
-      const response = await client.api.accounts[":id"]["$patch"]({ 
-        param: { id },
-        json,
+      if (!id) {
+        throw new Error("Fruit id is required");
+      }
+
+      const fruit = await apiFetch<Fruit>(`/fruits/${id}`, {
+        method: "PUT",
+        body: JSON.stringify(json),
       });
-      return await response.json();
+
+      return fruit;
     },
     onSuccess: () => {
-      toast.success("Account updated");
-      queryClient.invalidateQueries({ queryKey: ["account", { id }] });
-      queryClient.invalidateQueries({ queryKey: ["accounts"] });
-      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      toast.success("Fruit mis à jour");
+      queryClient.invalidateQueries({ queryKey: ["fruit", { id }] });
+      queryClient.invalidateQueries({ queryKey: ["fruits"] });
       queryClient.invalidateQueries({ queryKey: ["summary"] });
     },
     onError: () => {
-      toast.error("Failed to edit account");
+      toast.error("Impossible de mettre à jour le fruit");
     },
   });
-
-  return mutation;
 };

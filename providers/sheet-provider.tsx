@@ -2,14 +2,14 @@
 
 import { useMountedState } from "react-use";
 
-import { NewAccountSheet } from "@/features/accounts/components/new-account-sheet";
-import { EditAccountSheet } from "@/features/accounts/components/edit-account-sheet";
+import { NewFruitSheet } from "@/features/fruits/components/new-fruit-sheet";
+import { EditFruitSheet } from "@/features/fruits/components/edit-fruit-sheet";
 
-import { NewCategorySheet } from "@/features/categories/components/new-category-sheet";
-import { EditCategorySheet } from "@/features/categories/components/edit-category-sheet";
+import { NewStudentSheet } from "@/features/students/components/new-student-sheet";
+import { EditStudentSheet } from "@/features/students/components/edit-student-sheet";
 
-import { NewTransactionSheet } from "@/features/transactions/components/new-transaction-sheet";
-import { EditTransactionSheet } from "@/features/transactions/components/edit-transaction-sheet";
+import { NewEventSheet } from "@/features/events/components/new-event-sheet";
+import { EditEventSheet } from "@/features/events/components/edit-event-sheet";
 
 export const SheetProvider = () => {
   const isMounted = useMountedState();
@@ -18,14 +18,14 @@ export const SheetProvider = () => {
 
   return (
     <>
-      <NewAccountSheet />
-      <EditAccountSheet />
+      <NewFruitSheet />
+      <EditFruitSheet />
 
-      <NewCategorySheet />
-      <EditCategorySheet />
+      <NewStudentSheet />
+      <EditStudentSheet />
 
-      <NewTransactionSheet />
-      <EditTransactionSheet />
+      <NewEventSheet />
+      <EditEventSheet />
     </>
   );
 };
