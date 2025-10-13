@@ -18,7 +18,7 @@ import {
 const emptyValues: StudentFormValues = {
   firstname: "",
   gender: "",
-  jdsn: "",
+  jdsn: undefined,
 };
 
 export const EditStudentSheet = () => {
@@ -60,7 +60,7 @@ export const EditStudentSheet = () => {
     ? {
         firstname: studentQuery.data.firstname ?? "",
         gender: studentQuery.data.gender ?? "",
-        jdsn: studentQuery.data.jdsn ?? "",
+        jdsn: studentQuery.data.jdsn ?? undefined,
       }
     : emptyValues;
 

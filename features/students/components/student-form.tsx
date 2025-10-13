@@ -13,11 +13,32 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+const JDSN_OPTIONS = ["Andrea", "Béni", "Eriette", "Fann", "Madison"] as const;
+const JDSN_EMPTY_VALUE = "__none";
+
+const isValidJdsn = (value?: string | null) => {
+  if (!value) {
+    return true;
+  }
+
+  return JDSN_OPTIONS.includes(value as (typeof JDSN_OPTIONS)[number]);
+};
 
 const formSchema = z.object({
   firstname: z.string().min(1, "Le prénom est requis"),
   gender: z.string().optional(),
-  jdsn: z.string().optional(),
+  jdsn: z
+    .string()
+    .optional()
+    .refine(isValidJdsn, "Sélectionnez une valeur valide"),
 });
 
 export type StudentFormValues = z.infer<typeof formSchema>;
@@ -105,13 +126,32 @@ export const StudentForm = ({
           render={({ field }) => (
             <FormItem>
               <FormLabel>JDSN</FormLabel>
-              <FormControl>
-                <Input
-                  disabled={disabled}
-                  placeholder="Identifiant JDSN"
-                  {...field}
-                />
-              </FormControl>
+              <Select
+                disabled={disabled}
+                value={field.value ?? JDSN_EMPTY_VALUE}
+                onValueChange={(value) => {
+                  if (value === JDSN_EMPTY_VALUE) {
+                    field.onChange(undefined);
+                    return;
+                  }
+
+                  field.onChange(value);
+                }}
+              >
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Sélectionnez un JDSN" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value={JDSN_EMPTY_VALUE}>Aucun</SelectItem>
+                  {JDSN_OPTIONS.map((option) => (
+                    <SelectItem key={option} value={option}>
+                      {option}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <FormMessage />
             </FormItem>
           )}

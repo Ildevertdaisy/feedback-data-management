@@ -38,7 +38,7 @@ export const NewFruitSheet = () => {
           defaultValues={{
             firstname: "",
             indo: "",
-            status: "",
+            status: undefined,
             location: "",
             tagui_point: "",
           }}

@@ -52,8 +52,9 @@ export const columns: ColumnDef<ResponseType>[] = [
     cell: ({ row }) => row.original.studentFirstname ?? "Non renseigné",
   },
   {
-    accessorKey: "status",
+    accessorKey: "statusLabel",
     header: "Statut",
+    cell: ({ row }) => row.original.statusLabel ?? "Non renseigné",
   },
   {
     accessorKey: "location",

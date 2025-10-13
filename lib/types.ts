@@ -5,6 +5,8 @@ export type Student = {
   jdsn: string | null;
 };
 
+export type FruitStatusLabel = "CHATGUI" | "TTAGUI" | "COT" | "BB" | "DROP";
+
 export type Fruit = {
   id: number;
   firstname: string | null;
@@ -13,6 +15,7 @@ export type Fruit = {
   location: string | null;
   tagui_point: string | null;
   studentFirstname?: string | null;
+  statusLabel?: FruitStatusLabel | null;
 };
 
 export type Event = {

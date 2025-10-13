@@ -44,30 +44,21 @@ export const useGetSummary = () => {
   return useQuery<SummaryData>({
     queryKey: ["summary"],
     queryFn: async () => {
-      const [studentsRaw, fruitsRaw, eventsRaw, upcomingRaw] = await Promise.all([
+      const [studentsRaw, fruitsRaw, upcomingRaw] = await Promise.all([
         apiFetch<unknown>("/students"),
         apiFetch<unknown>("/fruits"),
-        apiFetch<unknown>("/events"),
-        apiFetch<unknown>("/events/upcoming"),
+        apiFetch<unknown>("/upcoming-events"),
       ]);
 
       const students = ensureArray<Student>(studentsRaw);
       const fruits = ensureArray<Fruit>(fruitsRaw);
-      const events = ensureArray<Event>(eventsRaw);
       const upcoming = ensureArray<Event>(upcomingRaw);
-
-      const upcomingEvents = upcoming.length
-        ? upcoming
-        : events.filter((event) => {
-            if (!event.date) return false;
-            return new Date(event.date) >= new Date();
-          });
 
       return {
         studentCount: students.length,
         fruitCount: fruits.length,
-        upcomingEventsCount: upcomingEvents.length,
-        upcomingEvents: upcomingEvents.slice(0, 5),
+        upcomingEventsCount: upcoming.length,
+        upcomingEvents: upcoming.slice(0, 5),
         fruitsByLocation: buildFruitsByLocation(fruits).slice(0, 5),
         studentsByGender: buildStudentsByGender(students),
       };

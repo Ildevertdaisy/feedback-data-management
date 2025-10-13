@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 
 import { apiFetch } from "@/lib/api";
 import { Fruit } from "@/lib/types";
+import { getFruitStatusLabel } from "@/features/fruits/constants";
 
 export const useGetFruit = (id?: number) => {
   return useQuery({
@@ -13,7 +14,10 @@ export const useGetFruit = (id?: number) => {
       }
 
       const fruit = await apiFetch<Fruit>(`/fruits/${id}`);
-      return fruit;
+      return {
+        ...fruit,
+        statusLabel: getFruitStatusLabel(fruit.status),
+      };
     },
   });
 };
