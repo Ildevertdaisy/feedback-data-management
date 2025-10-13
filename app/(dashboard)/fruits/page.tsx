@@ -28,17 +28,30 @@ import {
 
 import { columns } from "./columns";
 
+const ALL_STUDENTS_VALUE = "all";
+
 const FruitsPage = () => {
   const newFruit = useNewFruit();
   const deleteFruits = useBulkDeleteFruits();
-  const [selectedIndo, setSelectedIndo] = useState<number | null>(null);
+  const [selectedStudentValue, setSelectedStudentValue] = useState<string>(
+    ALL_STUDENTS_VALUE,
+  );
+
+  const selectedIndo = useMemo(() => {
+    if (selectedStudentValue === ALL_STUDENTS_VALUE) {
+      return null;
+    }
+
+    const parsedValue = Number.parseInt(selectedStudentValue, 10);
+
+    return Number.isNaN(parsedValue) ? null : parsedValue;
+  }, [selectedStudentValue]);
+
   const fruitsQuery = useGetFruits({ indo: selectedIndo });
   const studentsQuery = useGetStudents();
   const fruits = fruitsQuery.data || [];
 
   const isDisabled = fruitsQuery.isLoading || deleteFruits.isPending;
-
-  const ALL_STUDENTS_VALUE = "all";
 
   const studentOptions = useMemo(
     () =>
@@ -53,12 +66,7 @@ const FruitsPage = () => {
   );
 
   const handleIndoChange = (value: string) => {
-    if (value === ALL_STUDENTS_VALUE) {
-      setSelectedIndo(null);
-      return;
-    }
-
-    setSelectedIndo(Number(value));
+    setSelectedStudentValue(value);
   };
 
   const indoFilter = (
@@ -67,7 +75,7 @@ const FruitsPage = () => {
         Indo
       </Label>
       <Select
-        value={selectedIndo?.toString() ?? ALL_STUDENTS_VALUE}
+        value={selectedStudentValue}
         onValueChange={handleIndoChange}
         disabled={studentsQuery.isLoading}
       >
