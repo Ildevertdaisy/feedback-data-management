@@ -1,27 +1,44 @@
 import { useQuery } from "@tanstack/react-query";
 
 import { apiFetch } from "@/lib/api";
-import { Event, Fruit, Student } from "@/lib/types";
+import type { Event, Fruit, FruitStatusLabel, Student } from "@/lib/types";
+import {
+  FRUIT_STATUS_LABELS,
+  getFruitStatusLabel,
+} from "@/features/fruits/constants";
 
 type SummaryData = {
   studentCount: number;
   fruitCount: number;
   upcomingEventsCount: number;
   upcomingEvents: Event[];
-  fruitsByLocation: { label: string; value: number }[];
+  fruitsByStatus: { label: string; value: number }[];
   studentsByGender: { label: string; value: number }[];
 };
 
-const buildFruitsByLocation = (fruits: Fruit[]) => {
+const buildFruitsByStatus = (fruits: Fruit[]) => {
   const counts = fruits.reduce<Record<string, number>>((acc, fruit) => {
-    const key = fruit.location ?? "Inconnu";
-    acc[key] = (acc[key] ?? 0) + 1;
+    const label =
+      fruit.statusLabel ??
+      getFruitStatusLabel(fruit.status) ??
+      "Inconnu";
+
+    acc[label] = (acc[label] ?? 0) + 1;
     return acc;
   }, {});
 
-  return Object.entries(counts)
-    .map(([label, value]) => ({ label, value }))
-    .sort((a, b) => b.value - a.value);
+  const ordered = FRUIT_STATUS_LABELS.map((label) => ({
+    label,
+    value: counts[label] ?? 0,
+  })).filter(({ value }) => value > 0);
+
+  const others = Object.entries(counts)
+    .filter(([label]) =>
+      !FRUIT_STATUS_LABELS.includes(label as FruitStatusLabel),
+    )
+    .map(([label, value]) => ({ label, value }));
+
+  return [...ordered, ...others];
 };
 
 const buildStudentsByGender = (students: Student[]) => {
@@ -59,7 +76,7 @@ export const useGetSummary = () => {
         fruitCount: fruits.length,
         upcomingEventsCount: upcoming.length,
         upcomingEvents: upcoming.slice(0, 5),
-        fruitsByLocation: buildFruitsByLocation(fruits).slice(0, 5),
+        fruitsByStatus: buildFruitsByStatus(fruits),
         studentsByGender: buildStudentsByGender(students),
       };
     },

@@ -13,18 +13,6 @@ import {
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
-const resolveChartType = (count: number) => {
-  if (count <= 3) {
-    return "radial" as const;
-  }
-
-  if (count <= 7) {
-    return "pie" as const;
-  }
-
-  return "radar" as const;
-};
-
 export const DataCharts = () => {
   const { data, isLoading } = useGetSummary();
 
@@ -50,12 +38,10 @@ export const DataCharts = () => {
     );
   }
 
-  const fruitsByLocation = data?.fruitsByLocation.map(({ label, value }) => ({
+  const fruitsByStatus = data?.fruitsByStatus.map(({ label, value }) => ({
     name: label,
     value,
   }));
-
-  const preferredChart = resolveChartType(data?.fruitCount ?? 0);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-6 gap-8">
@@ -86,7 +72,7 @@ export const DataCharts = () => {
         </Card>
       </div>
       <div className="col-span-1 lg:col-span-3 xl:col-span-2">
-        <SpendingPie data={fruitsByLocation} initialType={preferredChart} />
+        <SpendingPie data={fruitsByStatus} initialType="pie" />
       </div>
     </div>
   );
