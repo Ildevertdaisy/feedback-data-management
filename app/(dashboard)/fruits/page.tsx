@@ -38,10 +38,12 @@ const FruitsPage = () => {
 
   const isDisabled = fruitsQuery.isLoading || deleteFruits.isPending;
 
+  const ALL_STUDENTS_VALUE = "all";
+
   const studentOptions = useMemo(
     () =>
       [
-        { value: "", label: "Tous les étudiants" },
+        { value: ALL_STUDENTS_VALUE, label: "Tous les étudiants" },
         ...(studentsQuery.data ?? []).map((student) => ({
           value: student.id.toString(),
           label: student.firstname ?? `Étudiant ${student.id}`,
@@ -51,7 +53,7 @@ const FruitsPage = () => {
   );
 
   const handleIndoChange = (value: string) => {
-    if (!value) {
+    if (value === ALL_STUDENTS_VALUE) {
       setSelectedIndo(null);
       return;
     }
@@ -65,7 +67,7 @@ const FruitsPage = () => {
         Indo
       </Label>
       <Select
-        value={selectedIndo?.toString() ?? ""}
+        value={selectedIndo?.toString() ?? ALL_STUDENTS_VALUE}
         onValueChange={handleIndoChange}
         disabled={studentsQuery.isLoading}
       >
