@@ -38,7 +38,7 @@ export const NewStudentSheet = () => {
           defaultValues={{
             firstname: "",
             gender: "",
-            jdsn: "",
+            jdsn: undefined,
           }}
         />
       </SheetContent>

@@ -5,6 +5,7 @@ import { useOpenFruit } from "@/features/fruits/hooks/use-open-fruit";
 import { useGetFruit } from "@/features/fruits/api/use-get-fruit";
 import { useEditFruit } from "@/features/fruits/api/use-edit-fruit";
 import { useDeleteFruit } from "@/features/fruits/api/use-delete-fruit";
+import { getFruitStatusLabel } from "@/features/fruits/constants";
 
 import { useConfirm } from "@/hooks/use-confirm";
 import {
@@ -18,7 +19,7 @@ import {
 const emptyValues: FruitFormValues = {
   firstname: "",
   indo: "",
-  status: "",
+  status: undefined,
   location: "",
   tagui_point: "",
 };
@@ -62,7 +63,7 @@ export const EditFruitSheet = () => {
     ? {
         firstname: fruitQuery.data.firstname ?? "",
         indo: fruitQuery.data.indo?.toString() ?? "",
-        status: fruitQuery.data.status?.toString() ?? "",
+        status: getFruitStatusLabel(fruitQuery.data.status ?? null) ?? undefined,
         location: fruitQuery.data.location ?? "",
         tagui_point: fruitQuery.data.tagui_point ?? "",
       }

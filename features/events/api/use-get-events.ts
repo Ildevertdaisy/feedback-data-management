@@ -7,7 +7,7 @@ export const useGetEvents = () => {
   return useQuery({
     queryKey: ["events"],
     queryFn: async () => {
-      const events = await apiFetch<Event[]>("/events");
+      const events = await apiFetch<Event[]>("/upcoming-events");
       return events;
     },
   });

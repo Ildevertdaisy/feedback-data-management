@@ -3,12 +3,21 @@ import { useQuery } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api";
 import { fetchStudentFirstname } from "@/lib/student-utils";
 import { Fruit } from "@/lib/types";
+import { getFruitStatusLabel } from "@/features/fruits/constants";
 
-export const useGetFruits = () => {
+type FruitFilters = {
+  indo?: number | null;
+};
+
+export const useGetFruits = (filters?: FruitFilters) => {
   return useQuery({
-    queryKey: ["fruits"],
+    queryKey: ["fruits", filters?.indo ?? null],
     queryFn: async () => {
-      const fruits = await apiFetch<Fruit[]>("/fruits");
+      const fruits = await apiFetch<Fruit[]>("/fruits", {
+        searchParams: {
+          indo: filters?.indo ?? undefined,
+        },
+      });
       const uniqueIndos = Array.from(
         new Set(
           fruits
@@ -29,6 +38,7 @@ export const useGetFruits = () => {
           typeof fruit.indo === "number"
             ? studentMap.get(fruit.indo) ?? null
             : null,
+        statusLabel: getFruitStatusLabel(fruit.status),
       }));
     },
   });

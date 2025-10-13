@@ -22,13 +22,21 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useGetStudents } from "@/features/students/api/use-get-students";
+import {
+  FRUIT_STATUS_LABELS,
+  FRUIT_STATUS_SELECT_OPTIONS,
+  getFruitStatusValue,
+} from "@/features/fruits/constants";
+import { FruitStatusLabel } from "@/lib/types";
 
 const formSchema = z.object({
   firstname: z
     .string({ required_error: "Le prénom est requis" })
     .min(1, "Le prénom est requis"),
   indo: z.string().optional(),
-  status: z.string().optional(),
+  status: z
+    .enum(FRUIT_STATUS_LABELS as [FruitStatusLabel, ...FruitStatusLabel[]])
+    .optional(),
   location: z.string().optional(),
   tagui_point: z.string().optional(),
 });
@@ -54,7 +62,7 @@ type Props = {
 const transformValues = (values: FruitFormValues): FruitSubmitValues => ({
   firstname: values.firstname,
   indo: values.indo ? Number(values.indo) : null,
-  status: values.status ? Number(values.status) : null,
+  status: getFruitStatusValue(values.status ?? null),
   location: values.location ? values.location : null,
   tagui_point: values.tagui_point ? values.tagui_point : null,
 });
@@ -150,14 +158,24 @@ export const FruitForm = ({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Statut</FormLabel>
-              <FormControl>
-                <Input
-                  disabled={disabled}
-                  placeholder="Statut (numérique)"
-                  type="number"
-                  {...field}
-                />
-              </FormControl>
+              <Select
+                disabled={disabled}
+                value={field.value ?? undefined}
+                onValueChange={field.onChange}
+              >
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Sélectionnez un statut" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {FRUIT_STATUS_SELECT_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <FormMessage />
             </FormItem>
           )}
