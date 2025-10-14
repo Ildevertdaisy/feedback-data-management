@@ -25,10 +25,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { FRUIT_STATUS_SELECT_OPTIONS } from "@/features/fruits/constants";
+import { FruitStatusLabel } from "@/lib/types";
 
 import { columns } from "./columns";
 
 const ALL_STUDENTS_VALUE = "all";
+
+const ALL_STATUS_VALUE = "all";
 
 const FruitsPage = () => {
   const newFruit = useNewFruit();
@@ -36,6 +40,9 @@ const FruitsPage = () => {
   const [selectedStudentValue, setSelectedStudentValue] = useState<string>(
     ALL_STUDENTS_VALUE,
   );
+  const [selectedStatus, setSelectedStatus] = useState<
+    FruitStatusLabel | typeof ALL_STATUS_VALUE
+  >(ALL_STATUS_VALUE);
 
   const selectedIndo = useMemo(() => {
     if (selectedStudentValue === ALL_STUDENTS_VALUE) {
@@ -49,7 +56,10 @@ const FruitsPage = () => {
 
   const fruitsQuery = useGetFruits({ indo: selectedIndo });
   const studentsQuery = useGetStudents();
-  const fruits = fruitsQuery.data || [];
+  const fruits = useMemo(
+    () => fruitsQuery.data ?? [],
+    [fruitsQuery.data],
+  );
 
   const isDisabled = fruitsQuery.isLoading || deleteFruits.isPending;
 
@@ -69,7 +79,19 @@ const FruitsPage = () => {
     setSelectedStudentValue(value);
   };
 
-  const indoFilter = (
+  const handleStatusChange = (value: FruitStatusLabel | typeof ALL_STATUS_VALUE) => {
+    setSelectedStatus(value);
+  };
+
+  const statusOptions = useMemo(
+    () => [
+      { value: ALL_STATUS_VALUE, label: "Tous les statuts" },
+      ...FRUIT_STATUS_SELECT_OPTIONS,
+    ],
+    [],
+  );
+
+  const studentFilter = (
     <div className="flex items-center gap-2">
       <Label htmlFor="fruit-indo-filter" className="whitespace-nowrap">
         Indo
@@ -95,6 +117,47 @@ const FruitsPage = () => {
       </Select>
     </div>
   );
+
+  const statusFilter = (
+    <div className="flex items-center gap-2">
+      <Label htmlFor="fruit-status-filter" className="whitespace-nowrap">
+        Statut
+      </Label>
+      <Select
+        value={selectedStatus}
+        onValueChange={handleStatusChange}
+      >
+        <SelectTrigger
+          id="fruit-status-filter"
+          className="bg-transparent min-w-[200px]"
+        >
+          <SelectValue placeholder="Tous les statuts" />
+        </SelectTrigger>
+        <SelectContent>
+          {statusOptions.map((option) => (
+            <SelectItem key={option.value} value={option.value}>
+              {option.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
+  );
+
+  const filtersToolbar = (
+    <div className="flex flex-wrap items-center gap-4">
+      {studentFilter}
+      {statusFilter}
+    </div>
+  );
+
+  const filteredFruits = useMemo(() => {
+    if (selectedStatus === ALL_STATUS_VALUE) {
+      return fruits;
+    }
+
+    return fruits.filter((fruit) => fruit.statusLabel === selectedStatus);
+  }, [fruits, selectedStatus]);
 
   if (fruitsQuery.isLoading) {
     return (
@@ -127,13 +190,13 @@ const FruitsPage = () => {
           <DataTable
             filterKeys={["firstname"]}
             columns={columns}
-            data={fruits}
+            data={filteredFruits}
             onDelete={(row) => {
               const ids = row.map((r) => Number(r.original.id));
               deleteFruits.mutate({ ids });
             }}
             disabled={isDisabled}
-            toolbar={indoFilter}
+            toolbar={filtersToolbar}
           />
         </CardContent>
       </Card>
