@@ -2,8 +2,8 @@
 
 import { Edit, MoreHorizontal, Trash } from "lucide-react";
 
-import { useOpenStudentFollowup } from "@/features/student-followups/hooks/use-open-student-followup";
-import { useDeleteStudentFollowup } from "@/features/student-followups/api/use-delete-student-followup";
+import { useOpenRentree } from "@/features/rentrees/hooks/use-open-rentree";
+import { useDeleteRentree } from "@/features/rentrees/api/use-delete-rentree";
 
 import { useConfirm } from "@/hooks/use-confirm";
 import { Button } from "@/components/ui/button";
@@ -20,12 +20,12 @@ type Props = {
 
 export const Actions = ({ id }: Props) => {
   const [ConfirmDialog, confirm] = useConfirm(
-    "Supprimer ce suivi ?",
+    "Supprimer cette rentrée ?",
     "Cette action est irréversible.",
   );
 
-  const deleteMutation = useDeleteStudentFollowup(id);
-  const { onOpen } = useOpenStudentFollowup();
+  const deleteMutation = useDeleteRentree(id);
+  const { onOpen } = useOpenRentree();
 
   const handleDelete = async () => {
     const ok = await confirm();

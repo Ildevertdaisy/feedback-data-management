@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo } from "react";
-import { Download } from "lucide-react";
 import { FaAppleAlt } from "react-icons/fa";
 import { FaUsers } from "react-icons/fa6";
 
@@ -9,7 +8,6 @@ import { FRUIT_CONVERSION_STATUS_LABELS, formatFruitStatusLabel } from "@/featur
 import type { FruitConversionStatus, Rentree, RentreeDashboard } from "@/lib/types";
 
 import { DataCard, DataCardLoading } from "@/components/data-card";
-import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -64,7 +62,7 @@ const buildPeriodLabel = (rentree?: Rentree | null) => {
 };
 
 const DEFAULT_CONVERSION_COUNTS: Record<FruitConversionStatus, number> = {
-  TTAGUI: 0,
+  TAGUI: 0,
   BB: 0,
   CENTRE: 0,
   DROP: 0,
@@ -77,8 +75,6 @@ type Props = {
   onRentreeChange: (value: number | null) => void;
   dashboard: RentreeDashboard | null | undefined;
   dashboardLoading: boolean;
-  onExport?: () => Promise<void>;
-  isExporting?: boolean;
 };
 
 export const DataGrid = ({
@@ -88,8 +84,6 @@ export const DataGrid = ({
   onRentreeChange,
   dashboard,
   dashboardLoading,
-  onExport,
-  isExporting,
 }: Props) => {
   const selectedRentree = useMemo(() => {
     if (!rentrees?.length || selectedRentreeId === null) {
@@ -160,23 +154,6 @@ export const DataGrid = ({
             </SelectContent>
           </Select>
         </div>
-        {onExport ? (
-          <Button
-            variant="secondary"
-            className="w-full sm:w-auto"
-            onClick={() => {
-              if (!selectedRentreeId || !onExport) {
-                return;
-              }
-
-              void onExport();
-            }}
-            disabled={!selectedRentreeId || isExporting}
-          >
-            <Download className="size-4 mr-2" />
-            {isExporting ? "Export en cours..." : "Exporter en CSV"}
-          </Button>
-        ) : null}
       </div>
       {isLoading ? (
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-5">

@@ -37,10 +37,14 @@ export const NewFruitSheet = () => {
           disabled={mutation.isPending}
           defaultValues={{
             firstname: "",
-            indo: "",
+            student_evangelisateur_id: "",
             status: undefined,
             location: "",
             tagui_point: "",
+            date_evangelisation: "",
+            date_subae: "",
+            rentree_id: "",
+            notes: "",
           }}
         />
       </SheetContent>

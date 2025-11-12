@@ -21,10 +21,16 @@ const buildSearchParams = (filters?: FruitFilters) => {
     return undefined;
   }
 
+  const statusValue = filters.status
+    ? getFruitStatusValue(filters.status) ?? undefined
+    : undefined;
+
   if (filters.rentreeId) {
     return {
       student_id: filters.studentId ?? undefined,
+      student_evangelisateur_id: filters.studentId ?? undefined,
       status: filters.status ?? undefined,
+      status_value: statusValue,
       date_subae_start: filters.dateSubaeStart ?? undefined,
       date_subae_end: filters.dateSubaeEnd ?? undefined,
     };
@@ -32,7 +38,9 @@ const buildSearchParams = (filters?: FruitFilters) => {
 
   return {
     indo: filters.studentId ?? undefined,
-    status: filters.status ? getFruitStatusValue(filters.status) ?? undefined : undefined,
+    student_evangelisateur_id: filters.studentId ?? undefined,
+    status: filters.status ?? undefined,
+    status_value: statusValue,
   };
 };
 

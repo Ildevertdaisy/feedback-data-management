@@ -18,10 +18,14 @@ import {
 
 const emptyValues: FruitFormValues = {
   firstname: "",
-  indo: "",
+  student_evangelisateur_id: "",
   status: undefined,
   location: "",
   tagui_point: "",
+  date_evangelisation: "",
+  date_subae: "",
+  rentree_id: "",
+  notes: "",
 };
 
 export const EditFruitSheet = () => {
@@ -62,10 +66,16 @@ export const EditFruitSheet = () => {
   const defaultValues: FruitFormValues = fruitQuery.data
     ? {
         firstname: fruitQuery.data.firstname ?? "",
-        indo: fruitQuery.data.indo?.toString() ?? "",
+        student_evangelisateur_id:
+          (fruitQuery.data.student_evangelisateur_id ?? fruitQuery.data.indo)?.toString() ??
+          "",
         status: getFruitStatusLabel(fruitQuery.data.status ?? null) ?? undefined,
         location: fruitQuery.data.location ?? "",
         tagui_point: fruitQuery.data.tagui_point ?? "",
+        date_evangelisation: fruitQuery.data.date_evangelisation ?? "",
+        date_subae: fruitQuery.data.date_subae ?? "",
+        rentree_id: fruitQuery.data.rentree_id?.toString() ?? "",
+        notes: fruitQuery.data.notes ?? "",
       }
     : emptyValues;
 
