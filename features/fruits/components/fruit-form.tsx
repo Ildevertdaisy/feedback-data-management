@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -22,23 +23,33 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useGetStudents } from "@/features/students/api/use-get-students";
+import { useGetRentrees } from "@/features/rentrees/api/use-get-rentrees";
 import {
   FRUIT_STATUS_LABELS,
   FRUIT_STATUS_SELECT_OPTIONS,
-  getFruitStatusValue,
+  toFruitStatusPayload,
 } from "@/features/fruits/constants";
 import { FruitStatusLabel } from "@/lib/types";
+
+const optionalString = z
+  .string()
+  .optional()
+  .transform((value) => (value && value.length ? value : ""));
 
 const formSchema = z.object({
   firstname: z
     .string({ required_error: "Le prénom est requis" })
     .min(1, "Le prénom est requis"),
-  indo: z.string().optional(),
+  student_evangelisateur_id: z.string().optional(),
   status: z
     .enum(FRUIT_STATUS_LABELS as [FruitStatusLabel, ...FruitStatusLabel[]])
     .optional(),
-  location: z.string().optional(),
-  tagui_point: z.string().optional(),
+  location: optionalString,
+  tagui_point: optionalString,
+  date_evangelisation: optionalString,
+  date_subae: optionalString,
+  rentree_id: z.string().optional(),
+  notes: optionalString,
 });
 
 export type FruitFormValues = z.infer<typeof formSchema>;
@@ -46,9 +57,15 @@ export type FruitFormValues = z.infer<typeof formSchema>;
 export type FruitSubmitValues = {
   firstname: string;
   indo: number | null;
-  status: number | null;
+  student_evangelisateur_id: number | null;
+  status: FruitStatusLabel | null;
+  status_value: number | null;
   location: string | null;
   tagui_point: string | null;
+  date_evangelisation: string | null;
+  date_subae: string | null;
+  rentree_id: number | null;
+  notes: string | null;
 };
 
 type Props = {
@@ -59,13 +76,30 @@ type Props = {
   disabled?: boolean;
 };
 
-const transformValues = (values: FruitFormValues): FruitSubmitValues => ({
-  firstname: values.firstname,
-  indo: values.indo ? Number(values.indo) : null,
-  status: getFruitStatusValue(values.status ?? null),
-  location: values.location ? values.location : null,
-  tagui_point: values.tagui_point ? values.tagui_point : null,
-});
+const transformValues = (values: FruitFormValues): FruitSubmitValues => {
+  const studentId = values.student_evangelisateur_id
+    ? Number(values.student_evangelisateur_id)
+    : null;
+
+  const rentreeId = values.rentree_id ? Number(values.rentree_id) : null;
+  const statusPayload = toFruitStatusPayload(values.status ?? null);
+
+  return {
+    firstname: values.firstname,
+    indo: studentId,
+    student_evangelisateur_id: studentId,
+    status: statusPayload.status,
+    status_value: statusPayload.status_value,
+    location: values.location ? values.location : null,
+    tagui_point: values.tagui_point ? values.tagui_point : null,
+    date_evangelisation: values.date_evangelisation
+      ? values.date_evangelisation
+      : null,
+    date_subae: values.date_subae ? values.date_subae : null,
+    rentree_id: rentreeId,
+    notes: values.notes ? values.notes : null,
+  };
+};
 
 export const FruitForm = ({
   id,
@@ -80,6 +114,7 @@ export const FruitForm = ({
   });
 
   const studentsQuery = useGetStudents();
+  const rentreesQuery = useGetRentrees();
 
   const studentOptions = useMemo(
     () =>
@@ -89,6 +124,29 @@ export const FruitForm = ({
       })),
     [studentsQuery.data],
   );
+
+  const rentreeOptions = useMemo(() => {
+    if (!rentreesQuery.data) {
+      return [] as { value: string; label: string }[];
+    }
+
+    return rentreesQuery.data.map((rentree) => {
+      const date = new Date(rentree.date_rentree);
+      const formattedDate = Number.isNaN(date.getTime())
+        ? null
+        : new Intl.DateTimeFormat("fr-FR", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+          }).format(date);
+
+      return {
+        value: rentree.id.toString(),
+        label:
+          rentree.nom_rentree ?? formattedDate ?? `Rentrée #${rentree.id}`,
+      };
+    });
+  }, [rentreesQuery.data]);
 
   const handleSubmit = (values: FruitFormValues) => {
     onSubmit(transformValues(values));
@@ -119,7 +177,7 @@ export const FruitForm = ({
           )}
         />
         <FormField
-          name="indo"
+          name="student_evangelisateur_id"
           control={form.control}
           render={({ field }) => (
             <FormItem>
@@ -207,6 +265,90 @@ export const FruitForm = ({
                 <Input
                   disabled={disabled}
                   placeholder="Point de contact"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <FormField
+            name="date_evangelisation"
+            control={form.control}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Date d'évangélisation</FormLabel>
+                <FormControl>
+                  <Input
+                    type="date"
+                    disabled={disabled}
+                    value={field.value ?? ""}
+                    onChange={field.onChange}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            name="date_subae"
+            control={form.control}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Date Subae</FormLabel>
+                <FormControl>
+                  <Input
+                    type="date"
+                    disabled={disabled}
+                    value={field.value ?? ""}
+                    onChange={field.onChange}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+        <FormField
+          name="rentree_id"
+          control={form.control}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Rentrée</FormLabel>
+              <Select
+                disabled={disabled || rentreesQuery.isLoading}
+                value={field.value ?? ""}
+                onValueChange={field.onChange}
+              >
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Associer à une rentrée" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="">Aucune rentrée</SelectItem>
+                  {rentreeOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          name="notes"
+          control={form.control}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Notes</FormLabel>
+              <FormControl>
+                <Textarea
+                  disabled={disabled}
+                  placeholder="Ajouter des notes complémentaires"
                   {...field}
                 />
               </FormControl>

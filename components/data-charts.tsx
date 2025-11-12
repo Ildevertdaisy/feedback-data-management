@@ -2,6 +2,8 @@
 
 import { useMemo } from "react";
 
+import { Download } from "lucide-react";
+
 import { formatFruitStatusLabel } from "@/features/fruits/constants";
 import type {
   Fruit,
@@ -17,6 +19,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const formatDate = (value: string | null | undefined) => {
@@ -45,6 +48,9 @@ type Props = {
   rentreeDashboards: RentreeDashboardOverview[] | undefined;
   rentreeDashboardsLoading: boolean;
   selectedRentree?: Rentree | null;
+  onExport?: () => Promise<void>;
+  isExporting?: boolean;
+  canExport?: boolean;
 };
 
 const DASHBOARD_COLOR_CLASSES = [
@@ -64,6 +70,9 @@ export const DataCharts = ({
   rentreeDashboards,
   rentreeDashboardsLoading,
   selectedRentree,
+  onExport,
+  isExporting,
+  canExport = false,
 }: Props) => {
   const isLoading = dashboardLoading || chatguisLoading;
   const isRentreeDashboardsLoading = rentreeDashboardsLoading;
@@ -78,11 +87,51 @@ export const DataCharts = ({
   }, [dashboard?.fruitsByStatus]);
 
   const chatguiItems = chatguis ?? [];
+  const exportDisabled = !onExport || !canExport || !!isExporting;
+
+  const exportButton = onExport ? (
+    <Button
+      variant="secondary"
+      className="hidden lg:inline-flex"
+      disabled={exportDisabled}
+      onClick={() => {
+        if (!onExport || exportDisabled) {
+          return;
+        }
+
+        void onExport();
+      }}
+    >
+      <Download className="size-4 mr-2" />
+      {isExporting ? "Export en cours..." : "Exporter en CSV"}
+    </Button>
+  ) : null;
+
+  const exportButtonMobile = onExport ? (
+    <Button
+      variant="secondary"
+      className="lg:hidden"
+      disabled={exportDisabled}
+      onClick={() => {
+        if (!onExport || exportDisabled) {
+          return;
+        }
+
+        void onExport();
+      }}
+    >
+      <Download className="size-4 mr-2" />
+      {isExporting ? "Export en cours..." : "Exporter"}
+    </Button>
+  ) : null;
 
   return (
     <div className="space-y-8">
       {isLoading ? (
         <div className="grid grid-cols-1 lg:grid-cols-6 gap-8">
+          <div className="col-span-1 lg:col-span-3 xl:col-span-2">
+            <SpendingPieLoading />
+          </div>
           <div className="col-span-1 lg:col-span-3 xl:col-span-4">
             <Card className="border-none drop-shadow-sm">
               <CardHeader>
@@ -95,12 +144,15 @@ export const DataCharts = ({
               </CardContent>
             </Card>
           </div>
-          <div className="col-span-1 lg:col-span-3 xl:col-span-2">
-            <SpendingPieLoading />
-          </div>
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-6 gap-8">
+          <div className="col-span-1 lg:col-span-3 xl:col-span-2">
+            <div className="space-y-3">
+              <SpendingPie data={pieData} initialType="pie" action={exportButton} />
+              {exportButtonMobile}
+            </div>
+          </div>
           <div className="col-span-1 lg:col-span-3 xl:col-span-4">
             <Card className="border-none drop-shadow-sm h-full">
               <CardHeader>
@@ -146,9 +198,6 @@ export const DataCharts = ({
                 )}
               </CardContent>
             </Card>
-          </div>
-          <div className="col-span-1 lg:col-span-3 xl:col-span-2">
-            <SpendingPie data={pieData} initialType="pie" />
           </div>
         </div>
       )}

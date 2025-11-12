@@ -8,12 +8,8 @@ import { EditFruitSheet } from "@/features/fruits/components/edit-fruit-sheet";
 import { NewStudentSheet } from "@/features/students/components/new-student-sheet";
 import { EditStudentSheet } from "@/features/students/components/edit-student-sheet";
 
-import { NewEventSheet } from "@/features/events/components/new-event-sheet";
-import { EditEventSheet } from "@/features/events/components/edit-event-sheet";
-import { NewStudentFollowupSheet } from "@/features/student-followups/components/new-student-followup-sheet";
-import { EditStudentFollowupSheet } from "@/features/student-followups/components/edit-student-followup-sheet";
-import { NewFruitFollowupSheet } from "@/features/fruit-followups/components/new-fruit-followup-sheet";
-import { EditFruitFollowupSheet } from "@/features/fruit-followups/components/edit-fruit-followup-sheet";
+import { NewRentreeSheet } from "@/features/rentrees/components/new-rentree-sheet";
+import { EditRentreeSheet } from "@/features/rentrees/components/edit-rentree-sheet";
 
 export const SheetProvider = () => {
   const isMounted = useMountedState();
@@ -28,14 +24,8 @@ export const SheetProvider = () => {
       <NewStudentSheet />
       <EditStudentSheet />
 
-      <NewEventSheet />
-      <EditEventSheet />
-
-      <NewStudentFollowupSheet />
-      <EditStudentFollowupSheet />
-
-      <NewFruitFollowupSheet />
-      <EditFruitFollowupSheet />
+      <NewRentreeSheet />
+      <EditRentreeSheet />
     </>
   );
 };

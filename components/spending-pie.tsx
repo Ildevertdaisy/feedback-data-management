@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { FileSearch, Loader2, PieChart, Radar, Target } from "lucide-react";
 
 import { 
@@ -27,9 +27,14 @@ type Props = {
     value: number;
   }[];
   initialType?: ChartType;
+  action?: ReactNode;
 };
 
-export const SpendingPie = ({ data = [], initialType = "pie" }: Props) => {
+export const SpendingPie = ({
+  data = [],
+  initialType = "pie",
+  action,
+}: Props) => {
   const [chartType, setChartType] = useState<ChartType>(initialType);
 
   useEffect(() => {
@@ -46,41 +51,44 @@ export const SpendingPie = ({ data = [], initialType = "pie" }: Props) => {
 
   return (
     <Card className="border-none drop-shadow-sm">
-      <CardHeader className="flex space-y-2 lg:space-y-0 lg:flex-row lg:items-center justify-between">
+      <CardHeader className="flex space-y-2 lg:space-y-0 lg:flex-row lg:items-center justify-between gap-3">
         <CardTitle className="text-xl line-clamp-1">
           Répartition des fruits par statut
         </CardTitle>
-        <Select value={chartType} onValueChange={onTypeChange}>
-          <SelectTrigger className="lg:w-auto h-9 rounded-md px-3">
-            <SelectValue placeholder="Type de graphique" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="pie">
-              <div className="flex items-center">
-                <PieChart className="size-4 mr-2 shrink-0" />
-                <p className="line-clamp-1">
-                  Camembert
-                </p>
-              </div>
-            </SelectItem>
-            <SelectItem value="radar">
-              <div className="flex items-center">
-                <Radar className="size-4 mr-2 shrink-0" />
-                <p className="line-clamp-1">
-                  Radar
-                </p>
-              </div>
-            </SelectItem>
-            <SelectItem value="radial">
-              <div className="flex items-center">
-                <Target className="size-4 mr-2 shrink-0" />
-                <p className="line-clamp-1">
-                  Radial
-                </p>
-              </div>
-            </SelectItem>
-          </SelectContent>
-        </Select>
+        <div className="flex items-center gap-2">
+          <Select value={chartType} onValueChange={onTypeChange}>
+            <SelectTrigger className="lg:w-auto h-9 rounded-md px-3">
+              <SelectValue placeholder="Type de graphique" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="pie">
+                <div className="flex items-center">
+                  <PieChart className="size-4 mr-2 shrink-0" />
+                  <p className="line-clamp-1">
+                    Camembert
+                  </p>
+                </div>
+              </SelectItem>
+              <SelectItem value="radar">
+                <div className="flex items-center">
+                  <Radar className="size-4 mr-2 shrink-0" />
+                  <p className="line-clamp-1">
+                    Radar
+                  </p>
+                </div>
+              </SelectItem>
+              <SelectItem value="radial">
+                <div className="flex items-center">
+                  <Target className="size-4 mr-2 shrink-0" />
+                  <p className="line-clamp-1">
+                    Radial
+                  </p>
+                </div>
+              </SelectItem>
+            </SelectContent>
+          </Select>
+          {action}
+        </div>
       </CardHeader>
       <CardContent>
         {data.length === 0 ? (
@@ -105,9 +113,12 @@ export const SpendingPie = ({ data = [], initialType = "pie" }: Props) => {
 export const SpendingPieLoading = () => {
   return (
     <Card className="border-none drop-shadow-sm">
-      <CardHeader className="flex space-y-2 lg:space-y-0 lg:flex-row lg:items-center justify-between">
+      <CardHeader className="flex space-y-2 lg:space-y-0 lg:flex-row lg:items-center justify-between gap-3">
         <Skeleton className="h-8 w-48" />
-        <Skeleton className="h-8 lg:w-[120px] w-full" />
+        <div className="flex items-center gap-2 w-full lg:w-auto">
+          <Skeleton className="h-8 lg:w-[120px] w-full" />
+          <Skeleton className="h-8 w-32" />
+        </div>
       </CardHeader>
       <CardContent>
         <div className="h-[350px] w-full flex items-center justify-center">

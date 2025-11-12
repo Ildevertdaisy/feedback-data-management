@@ -27,16 +27,8 @@ const routes = [
     label: "Étudiants",
   },
   {
-    href: "/evenements",
-    label: "Évènements",
-  },
-  {
-    href: "/suivis-etudiants",
-    label: "Suivis étudiants",
-  },
-  {
-    href: "/suivis-fruits",
-    label: "Suivis fruits",
+    href: "/rentrees",
+    label: "Rentrées",
   },
 ];
 

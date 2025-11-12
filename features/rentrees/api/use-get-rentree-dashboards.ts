@@ -20,7 +20,7 @@ type BackendDashboard = {
 };
 
 const DEFAULT_CONVERSION_COUNTS: Record<FruitConversionStatus, number> = {
-  TTAGUI: 0,
+  TAGUI: 0,
   BB: 0,
   CENTRE: 0,
   DROP: 0,

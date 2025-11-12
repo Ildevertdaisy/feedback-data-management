@@ -8,7 +8,7 @@ export type Student = {
 
 export type FruitStatusLabel =
   | "CHATGUI"
-  | "TTAGUI"
+  | "TAGUI"
   | "BB"
   | "CENTRE"
   | "DROP";
@@ -19,7 +19,7 @@ export type Fruit = {
   id: number;
   firstname: string | null;
   indo: number | null;
-  status: number | null;
+  status: number | string | null;
   location: string | null;
   tagui_point: string | null;
   studentFirstname?: string | null;

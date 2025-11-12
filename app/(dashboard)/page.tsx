@@ -72,8 +72,6 @@ export default function DashboardPage() {
         onRentreeChange={setSelectedRentreeId}
         dashboard={dashboardQuery.data}
         dashboardLoading={dashboardQuery.isLoading || dashboardQuery.isFetching}
-        onExport={selectedRentreeId ? handleExport : undefined}
-        isExporting={isExporting}
       />
       <DataCharts
         dashboard={dashboardQuery.data}
@@ -85,6 +83,9 @@ export default function DashboardPage() {
           dashboardsQuery.isLoading || dashboardsQuery.isFetching
         }
         selectedRentree={selectedRentree}
+        onExport={selectedRentreeId ? handleExport : undefined}
+        isExporting={isExporting}
+        canExport={!!selectedRentreeId}
       />
     </div>
   );

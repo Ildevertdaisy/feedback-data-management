@@ -1,26 +1,29 @@
 "use client";
 
-import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
+import { ColumnDef } from "@tanstack/react-table";
 
-import { FruitFollowup } from "@/lib/types";
+import { Rentree } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 
 import { Actions } from "./actions";
 
-export type ResponseType = FruitFollowup;
-
 const formatDate = (value: string | null | undefined) => {
-  if (!value) return "Non renseignée";
-
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) {
-    return "Non renseignée";
+  if (!value) {
+    return "—";
   }
 
-  return date.toLocaleString();
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+
+  return date.toLocaleDateString("fr-FR");
 };
+
+export type ResponseType = Rentree;
 
 export const columns: ColumnDef<ResponseType>[] = [
   {
@@ -46,43 +49,36 @@ export const columns: ColumnDef<ResponseType>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "fruitFirstname",
+    accessorKey: "nom_rentree",
     header: ({ column }) => (
       <Button
         variant="ghost"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
-        Fruit
+        Nom
         <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
-    cell: ({ row }) => row.original.fruitFirstname ?? "Non renseigné",
   },
   {
-    accessorKey: "studentFirstname",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Étudiant
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-    cell: ({ row }) => row.original.studentFirstname ?? "Non renseigné",
+    accessorKey: "date_rentree",
+    header: "Date de rentrée",
+    cell: ({ row }) => formatDate(row.original.date_rentree),
   },
   {
-    accessorKey: "last_date",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Dernier suivi
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-    cell: ({ row }) => formatDate(row.original.last_date),
+    accessorKey: "date_debut_chatgui",
+    header: "Début Chatgui",
+    cell: ({ row }) => formatDate(row.original.date_debut_chatgui),
+  },
+  {
+    accessorKey: "date_fin_chatgui",
+    header: "Fin Chatgui",
+    cell: ({ row }) => formatDate(row.original.date_fin_chatgui),
+  },
+  {
+    accessorKey: "description",
+    header: "Description",
+    cell: ({ row }) => row.original.description ?? "—",
   },
   {
     id: "actions",
