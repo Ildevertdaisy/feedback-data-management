@@ -1,18 +1,18 @@
-import { FruitStatusLabel } from "@/lib/types";
+import { FruitConversionStatus, FruitStatusLabel } from "@/lib/types";
 
 export const FRUIT_STATUS_LABELS: readonly FruitStatusLabel[] = [
   "CHATGUI",
   "TTAGUI",
-  "COT",
   "BB",
+  "CENTRE",
   "DROP",
 ];
 
 const FRUIT_STATUS_VALUE_MAP: Record<FruitStatusLabel, number> = {
   CHATGUI: 0,
   TTAGUI: 1,
-  COT: 2,
   BB: 3,
+  CENTRE: 2,
   DROP: 4,
 };
 
@@ -24,8 +24,32 @@ const FRUIT_STATUS_LABEL_MAP = Object.entries(FRUIT_STATUS_VALUE_MAP).reduce(
   {} as Record<number, FruitStatusLabel>,
 );
 
+export const FRUIT_CONVERSION_STATUS_LABELS: readonly FruitConversionStatus[] = [
+  "TTAGUI",
+  "BB",
+  "CENTRE",
+  "DROP",
+];
+
+export const formatFruitStatusLabel = (label: FruitStatusLabel) => {
+  switch (label) {
+    case "TTAGUI":
+      return "TTagui";
+    case "BB":
+      return "BB";
+    case "CENTRE":
+      return "Centre";
+    case "DROP":
+      return "Drop";
+    case "CHATGUI":
+      return "Chatgui";
+    default:
+      return label;
+  }
+};
+
 export const FRUIT_STATUS_SELECT_OPTIONS = FRUIT_STATUS_LABELS.map((label) => ({
-  label,
+  label: formatFruitStatusLabel(label),
   value: label,
 }));
 
