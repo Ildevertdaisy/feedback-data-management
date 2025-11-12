@@ -3,6 +3,7 @@ export type Student = {
   firstname: string | null;
   gender: string | null;
   jdsn: string | null;
+  classe?: string | null;
 };
 
 export type FruitStatusLabel =
@@ -23,6 +24,11 @@ export type Fruit = {
   tagui_point: string | null;
   studentFirstname?: string | null;
   statusLabel?: FruitStatusLabel | null;
+  student_evangelisateur_id?: number | null;
+  rentree_id?: number | null;
+  date_evangelisation?: string | null;
+  date_subae?: string | null;
+  notes?: string | null;
 };
 
 export type Event = {
@@ -63,4 +69,25 @@ export type FruitFollowup = {
   last_date: string | null;
   studentFirstname?: string | null;
   fruitFirstname?: string | null;
+};
+
+export type Rentree = {
+  id: number;
+  date_rentree: string;
+  date_debut_chatgui: string;
+  date_fin_chatgui: string;
+  nom_rentree: string | null;
+  description: string | null;
+  created_at: string | null;
+};
+
+export type RentreeDashboard = {
+  rentreeId: number;
+  chatguiCount: number;
+  conversionCounts: Record<FruitConversionStatus, number>;
+  fruitsByStatus: { label: FruitConversionStatus; value: number }[];
+};
+
+export type RentreeDashboardOverview = RentreeDashboard & {
+  rentree?: Rentree | null;
 };

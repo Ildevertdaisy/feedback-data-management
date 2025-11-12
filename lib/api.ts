@@ -4,7 +4,10 @@ type FetchOptions = RequestInit & {
   searchParams?: Record<string, string | number | boolean | null | undefined>;
 };
 
-const buildUrl = (path: string, searchParams?: FetchOptions["searchParams"]) => {
+export const buildApiUrl = (
+  path: string,
+  searchParams?: FetchOptions["searchParams"],
+) => {
   const url = new URL(path, API_BASE_URL);
 
   if (searchParams) {
@@ -24,7 +27,7 @@ export async function apiFetch<T>(
   path: string,
   { searchParams, headers, ...init }: FetchOptions = {},
 ): Promise<T> {
-  const url = buildUrl(path, searchParams);
+  const url = buildApiUrl(path, searchParams);
 
   const response = await fetch(url, {
     ...init,

@@ -3,13 +3,21 @@
 import { ArrowUpDown } from "lucide-react";
 import { ColumnDef } from "@tanstack/react-table";
 
-import { Student } from "@/lib/types";
+import { Student, FruitStatusLabel } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  FRUIT_STATUS_LABELS,
+  formatFruitStatusLabel,
+} from "@/features/fruits/constants";
 
 import { Actions } from "./actions";
 
-export type ResponseType = Student;
+type FruitStatusCounts = Partial<Record<FruitStatusLabel, number>>;
+
+export type ResponseType = Student & {
+  fruitStatuses?: FruitStatusCounts;
+};
 
 export const columns: ColumnDef<ResponseType>[] = [
   {
@@ -53,6 +61,39 @@ export const columns: ColumnDef<ResponseType>[] = [
   {
     accessorKey: "jdsn",
     header: "JDSN",
+  },
+  {
+    accessorKey: "classe",
+    header: "Classe",
+    cell: ({ row }) => row.original.classe ?? "—",
+  },
+  {
+    id: "fruitStatuses",
+    header: "Fruits (statuts)",
+    cell: ({ row }) => {
+      const statuses = row.original.fruitStatuses ?? {};
+      const entries = FRUIT_STATUS_LABELS.filter(
+        (label) => (statuses?.[label] ?? 0) > 0,
+      ).map((label) => [label, statuses[label] ?? 0] as const);
+
+      if (!entries.length) {
+        return <span className="text-sm text-muted-foreground">Aucun fruit</span>;
+      }
+
+      return (
+        <div className="flex flex-wrap gap-2">
+          {entries.map(([label, count]) => (
+            <span
+              key={label}
+              className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-xs font-medium"
+            >
+              {formatFruitStatusLabel(label)}
+              <span className="ml-1 text-muted-foreground">({count})</span>
+            </span>
+          ))}
+        </div>
+      );
+    },
   },
   {
     id: "actions",

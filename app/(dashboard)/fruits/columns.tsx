@@ -6,6 +6,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Fruit } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { formatFruitStatusLabel } from "@/features/fruits/constants";
 
 import { Actions } from "./actions";
 
@@ -54,7 +55,10 @@ export const columns: ColumnDef<ResponseType>[] = [
   {
     accessorKey: "statusLabel",
     header: "Statut",
-    cell: ({ row }) => row.original.statusLabel ?? "Non renseigné",
+    cell: ({ row }) =>
+      row.original.statusLabel
+        ? formatFruitStatusLabel(row.original.statusLabel)
+        : "Non renseigné",
   },
   {
     accessorKey: "location",
@@ -63,6 +67,24 @@ export const columns: ColumnDef<ResponseType>[] = [
   {
     accessorKey: "tagui_point",
     header: "Point Tagui",
+  },
+  {
+    accessorKey: "date_subae",
+    header: "Date Subae",
+    cell: ({ row }) => {
+      const value = row.original.date_subae;
+
+      if (!value) {
+        return "—";
+      }
+
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) {
+        return value;
+      }
+
+      return date.toLocaleDateString("fr-FR");
+    },
   },
   {
     id: "actions",
