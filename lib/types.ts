@@ -5,7 +5,14 @@ export type Student = {
   jdsn: string | null;
 };
 
-export type FruitStatusLabel = "CHATGUI" | "TTAGUI" | "COT" | "BB" | "DROP";
+export type FruitStatusLabel =
+  | "CHATGUI"
+  | "TTAGUI"
+  | "BB"
+  | "CENTRE"
+  | "DROP";
+
+export type FruitConversionStatus = Exclude<FruitStatusLabel, "CHATGUI">;
 
 export type Fruit = {
   id: number;

@@ -1,56 +1,58 @@
 import { useQuery } from "@tanstack/react-query";
 
 import { apiFetch } from "@/lib/api";
-import type { Event, Fruit, FruitStatusLabel, Student } from "@/lib/types";
+import type {
+  Event,
+  Fruit,
+  FruitConversionStatus,
+  FruitStatusLabel,
+} from "@/lib/types";
 import {
-  FRUIT_STATUS_LABELS,
+  FRUIT_CONVERSION_STATUS_LABELS,
+  formatFruitStatusLabel,
   getFruitStatusLabel,
 } from "@/features/fruits/constants";
 
+type StatusCounts = Partial<Record<FruitStatusLabel, number>>;
+
+type ConversionCounts = Record<FruitConversionStatus, number>;
+
 type SummaryData = {
-  studentCount: number;
-  fruitCount: number;
+  chatguiCount: number;
+  conversionCounts: ConversionCounts;
   upcomingEventsCount: number;
   upcomingEvents: Event[];
   fruitsByStatus: { label: string; value: number }[];
-  studentsByGender: { label: string; value: number }[];
 };
 
-const buildFruitsByStatus = (fruits: Fruit[]) => {
-  const counts = fruits.reduce<Record<string, number>>((acc, fruit) => {
-    const label =
-      fruit.statusLabel ??
-      getFruitStatusLabel(fruit.status) ??
-      "Inconnu";
+const countFruitsByStatus = (fruits: Fruit[]): StatusCounts => {
+  return fruits.reduce<StatusCounts>((acc, fruit) => {
+    const label = fruit.statusLabel ?? getFruitStatusLabel(fruit.status);
+
+    if (!label) {
+      return acc;
+    }
 
     acc[label] = (acc[label] ?? 0) + 1;
     return acc;
   }, {});
-
-  const ordered = FRUIT_STATUS_LABELS.map((label) => ({
-    label,
-    value: counts[label] ?? 0,
-  })).filter(({ value }) => value > 0);
-
-  const others = Object.entries(counts)
-    .filter(([label]) =>
-      !FRUIT_STATUS_LABELS.includes(label as FruitStatusLabel),
-    )
-    .map(([label, value]) => ({ label, value }));
-
-  return [...ordered, ...others];
 };
 
-const buildStudentsByGender = (students: Student[]) => {
-  const counts = students.reduce<Record<string, number>>((acc, student) => {
-    const key = student.gender ?? "Non renseigné";
-    acc[key] = (acc[key] ?? 0) + 1;
-    return acc;
-  }, {});
+const buildConversionCounts = (counts: StatusCounts): ConversionCounts => {
+  return FRUIT_CONVERSION_STATUS_LABELS.reduce<ConversionCounts>(
+    (acc, label) => {
+      acc[label] = counts[label] ?? 0;
+      return acc;
+    },
+    {} as ConversionCounts,
+  );
+};
 
-  return Object.entries(counts)
-    .map(([label, value]) => ({ label, value }))
-    .sort((a, b) => b.value - a.value);
+const buildFruitsByStatus = (conversionCounts: ConversionCounts) => {
+  return FRUIT_CONVERSION_STATUS_LABELS.map((label) => ({
+    label: formatFruitStatusLabel(label),
+    value: conversionCounts[label],
+  })).filter(({ value }) => value > 0);
 };
 
 const ensureArray = <T,>(value: unknown): T[] => {
@@ -61,23 +63,22 @@ export const useGetSummary = () => {
   return useQuery<SummaryData>({
     queryKey: ["summary"],
     queryFn: async () => {
-      const [studentsRaw, fruitsRaw, upcomingRaw] = await Promise.all([
-        apiFetch<unknown>("/students"),
+      const [fruitsRaw, upcomingRaw] = await Promise.all([
         apiFetch<unknown>("/fruits"),
         apiFetch<unknown>("/upcoming-events"),
       ]);
 
-      const students = ensureArray<Student>(studentsRaw);
       const fruits = ensureArray<Fruit>(fruitsRaw);
       const upcoming = ensureArray<Event>(upcomingRaw);
+      const statusCounts = countFruitsByStatus(fruits);
+      const conversionCounts = buildConversionCounts(statusCounts);
 
       return {
-        studentCount: students.length,
-        fruitCount: fruits.length,
+        chatguiCount: statusCounts.CHATGUI ?? 0,
+        conversionCounts,
         upcomingEventsCount: upcoming.length,
         upcomingEvents: upcoming.slice(0, 5),
-        fruitsByStatus: buildFruitsByStatus(fruits),
-        studentsByGender: buildStudentsByGender(students),
+        fruitsByStatus: buildFruitsByStatus(conversionCounts),
       };
     },
   });
