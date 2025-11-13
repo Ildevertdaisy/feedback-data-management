@@ -9,6 +9,7 @@ import { useGetFruits } from "@/features/fruits/api/use-get-fruits";
 import { useBulkDeleteFruits } from "@/features/fruits/api/use-bulk-delete-fruits";
 import { useGetStudents } from "@/features/students/api/use-get-students";
 import { useGetRentrees } from "@/features/rentrees/api/use-get-rentrees";
+import { useDefaultRentree } from "@/features/rentrees/hooks/use-default-rentree";
 
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/data-table";
@@ -78,15 +79,33 @@ const FruitsPage = () => {
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
 
+  const { defaultRentreeId } = useDefaultRentree();
+
   useEffect(() => {
-    if (
-      selectedRentreeId === null &&
-      rentreesQuery.data &&
-      rentreesQuery.data.length > 0
-    ) {
-      setSelectedRentreeId(rentreesQuery.data[0].id);
+    const rentrees = rentreesQuery.data;
+
+    if (!rentrees || rentrees.length === 0) {
+      return;
     }
-  }, [rentreesQuery.data, selectedRentreeId]);
+
+    const hasSelectedRentree =
+      typeof selectedRentreeId === "number" &&
+      rentrees.some((rentree) => rentree.id === selectedRentreeId);
+
+    if (hasSelectedRentree) {
+      return;
+    }
+
+    if (
+      typeof defaultRentreeId === "number" &&
+      rentrees.some((rentree) => rentree.id === defaultRentreeId)
+    ) {
+      setSelectedRentreeId(defaultRentreeId);
+      return;
+    }
+
+    setSelectedRentreeId(rentrees[0]?.id ?? null);
+  }, [defaultRentreeId, rentreesQuery.data, selectedRentreeId]);
 
   const studentsQuery = useGetStudents();
 

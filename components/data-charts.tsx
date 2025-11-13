@@ -4,15 +4,22 @@ import { useMemo } from "react";
 
 import { Download } from "lucide-react";
 
-import { formatFruitStatusLabel } from "@/features/fruits/constants";
+import {
+  FRUIT_CONVERSION_STATUS_LABELS,
+  formatFruitStatusLabel,
+} from "@/features/fruits/constants";
 import type {
   Fruit,
+  FruitConversionStatus,
   Rentree,
   RentreeDashboard,
   RentreeDashboardOverview,
 } from "@/lib/types";
 
-import { SpendingPie, SpendingPieLoading } from "@/components/spending-pie";
+import {
+  StatusBarChart,
+  StatusBarChartLoading,
+} from "@/components/status-bar-chart";
 import {
   Card,
   CardContent,
@@ -62,6 +69,13 @@ const DASHBOARD_COLOR_CLASSES = [
   "bg-rose-50 border-rose-200",
 ];
 
+const FRUIT_STATUS_COLORS: Record<FruitConversionStatus, string> = {
+  TAGUI: "#0EA5E9",
+  BB: "#22C55E",
+  CENTRE: "#6366F1",
+  DROP: "#F97316",
+};
+
 export const DataCharts = ({
   dashboard,
   dashboardLoading,
@@ -77,13 +91,20 @@ export const DataCharts = ({
   const isLoading = dashboardLoading || chatguisLoading;
   const isRentreeDashboardsLoading = rentreeDashboardsLoading;
 
-  const pieData = useMemo(() => {
-    return (dashboard?.fruitsByStatus ?? [])
-      .map(({ label, value }) => ({
-        name: formatFruitStatusLabel(label),
+  const barData = useMemo(() => {
+    const counts = new Map(
+      (dashboard?.fruitsByStatus ?? []).map(({ label, value }) => [
+        label,
         value,
-      }))
-      .filter((item) => item.value > 0);
+      ]),
+    );
+
+    return FRUIT_CONVERSION_STATUS_LABELS.map((status) => ({
+      label: status,
+      name: formatFruitStatusLabel(status),
+      value: counts.get(status) ?? 0,
+      color: FRUIT_STATUS_COLORS[status],
+    }));
   }, [dashboard?.fruitsByStatus]);
 
   const chatguiItems = chatguis ?? [];
@@ -92,7 +113,7 @@ export const DataCharts = ({
   const exportButton = onExport ? (
     <Button
       variant="secondary"
-      className="hidden lg:inline-flex"
+      className="w-full sm:w-auto"
       disabled={exportDisabled}
       onClick={() => {
         if (!onExport || exportDisabled) {
@@ -107,100 +128,85 @@ export const DataCharts = ({
     </Button>
   ) : null;
 
-  const exportButtonMobile = onExport ? (
-    <Button
-      variant="secondary"
-      className="lg:hidden"
-      disabled={exportDisabled}
-      onClick={() => {
-        if (!onExport || exportDisabled) {
-          return;
-        }
-
-        void onExport();
-      }}
-    >
-      <Download className="size-4 mr-2" />
-      {isExporting ? "Export en cours..." : "Exporter"}
-    </Button>
-  ) : null;
-
   return (
     <div className="space-y-8">
-      {isLoading ? (
-        <div className="grid grid-cols-1 lg:grid-cols-6 gap-8">
-          <div className="col-span-1 lg:col-span-3 xl:col-span-2">
-            <SpendingPieLoading />
-          </div>
-          <div className="col-span-1 lg:col-span-3 xl:col-span-4">
-            <Card className="border-none drop-shadow-sm">
-              <CardHeader>
-                <Skeleton className="h-8 w-48" />
-              </CardHeader>
-              <CardContent>
-                <div className="h-[350px] w-full flex items-center justify-center">
-                  <Skeleton className="h-6 w-6 rounded-full" />
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+      <div className="flex justify-center">
+        <div className="w-full max-w-4xl">
+          {isLoading ? (
+            <StatusBarChartLoading />
+          ) : (
+            <StatusBarChart data={barData} action={exportButton} />
+          )}
         </div>
-      ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-6 gap-8">
-          <div className="col-span-1 lg:col-span-3 xl:col-span-2">
-            <div className="space-y-3">
-              <SpendingPie data={pieData} initialType="pie" action={exportButton} />
-              {exportButtonMobile}
-            </div>
-          </div>
-          <div className="col-span-1 lg:col-span-3 xl:col-span-4">
-            <Card className="border-none drop-shadow-sm h-full">
-              <CardHeader>
-                <CardTitle className="text-xl line-clamp-1">
-                  {selectedRentree?.nom_rentree
-                    ? `Chatguis de ${selectedRentree.nom_rentree}`
-                    : "Chatguis de la rentrée"}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {chatguiItems.length ? (
-                  chatguiItems.map((fruit) => {
-                    const evangelisationDate = formatDate(
-                      fruit.date_evangelisation ?? null,
-                    );
-                    const subaeDate = formatDate(fruit.date_subae ?? null);
+      </div>
 
-                    return (
-                      <div
-                        key={fruit.id}
-                        className="border rounded-lg px-4 py-3 bg-muted/40"
-                      >
-                        <p className="font-medium text-sm">
-                          {fruit.firstname ?? `Fruit ${fruit.id}`}
-                        </p>
+      <div>
+        {isLoading ? (
+          <Card className="border-none drop-shadow-sm">
+            <CardHeader>
+              <Skeleton className="h-8 w-48" />
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {Array.from({ length: 3 }).map((_, index) => (
+                  <div
+                    key={index}
+                    className="border rounded-lg px-4 py-3 bg-muted/40"
+                  >
+                    <Skeleton className="h-4 w-32" />
+                    <Skeleton className="h-3 w-44 mt-2" />
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        ) : (
+          <Card className="border-none drop-shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-xl line-clamp-1">
+                {selectedRentree?.nom_rentree
+                  ? `Chatguis de ${selectedRentree.nom_rentree}`
+                  : "Chatguis de la rentrée"}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {chatguiItems.length ? (
+                chatguiItems.map((fruit) => {
+                  const evangelisationDate = formatDate(
+                    fruit.date_evangelisation ?? null,
+                  );
+                  const subaeDate = formatDate(fruit.date_subae ?? null);
+
+                  return (
+                    <div
+                      key={fruit.id}
+                      className="border rounded-lg px-4 py-3 bg-muted/40"
+                    >
+                      <p className="font-medium text-sm">
+                        {fruit.firstname ?? `Fruit ${fruit.id}`}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {evangelisationDate
+                          ? `Évangélisé le ${evangelisationDate}`
+                          : "Date d'évangélisation inconnue"}
+                      </p>
+                      {subaeDate ? (
                         <p className="text-xs text-muted-foreground">
-                          {evangelisationDate
-                            ? `Évangélisé le ${evangelisationDate}`
-                            : "Date d'évangélisation inconnue"}
+                          {`Subae le ${subaeDate}`}
                         </p>
-                        {subaeDate ? (
-                          <p className="text-xs text-muted-foreground">
-                            {`Subae le ${subaeDate}`}
-                          </p>
-                        ) : null}
-                      </div>
-                    );
-                  })
-                ) : (
-                  <p className="text-sm text-muted-foreground">
-                    Aucun chatgui enregistré pour la période sélectionnée.
-                  </p>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      )}
+                      ) : null}
+                    </div>
+                  );
+                })
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  Aucun chatgui enregistré pour la période sélectionnée.
+                </p>
+              )}
+            </CardContent>
+          </Card>
+        )}
+      </div>
 
       <section className="space-y-4">
         <div className="flex items-center justify-between">
