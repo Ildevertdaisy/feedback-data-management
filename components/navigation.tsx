@@ -30,6 +30,10 @@ const routes = [
     href: "/rentrees",
     label: "Rentrées",
   },
+  {
+    href: "/reglages",
+    label: "Réglages",
+  },
 ];
 
 export const Navigation = () => {

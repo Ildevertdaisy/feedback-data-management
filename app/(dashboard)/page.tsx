@@ -9,6 +9,7 @@ import { useGetRentrees } from "@/features/rentrees/api/use-get-rentrees";
 import { useGetRentreeDashboard } from "@/features/rentrees/api/use-get-rentree-dashboard";
 import { useGetRentreeChatguis } from "@/features/rentrees/api/use-get-rentree-chatguis";
 import { useGetRentreeDashboards } from "@/features/rentrees/api/use-get-rentree-dashboards";
+import { useDefaultRentree } from "@/features/rentrees/hooks/use-default-rentree";
 import { downloadRentreeCsv } from "@/features/rentrees/utils/download-rentree-csv";
 
 export default function DashboardPage() {
@@ -17,16 +18,33 @@ export default function DashboardPage() {
     null,
   );
   const [isExporting, setIsExporting] = useState(false);
+  const { defaultRentreeId } = useDefaultRentree();
 
   useEffect(() => {
-    if (
-      selectedRentreeId === null &&
-      rentreesQuery.data &&
-      rentreesQuery.data.length > 0
-    ) {
-      setSelectedRentreeId(rentreesQuery.data[0].id);
+    const rentrees = rentreesQuery.data;
+
+    if (!rentrees || rentrees.length === 0) {
+      return;
     }
-  }, [rentreesQuery.data, selectedRentreeId]);
+
+    const hasSelectedRentree =
+      typeof selectedRentreeId === "number" &&
+      rentrees.some((rentree) => rentree.id === selectedRentreeId);
+
+    if (hasSelectedRentree) {
+      return;
+    }
+
+    if (
+      typeof defaultRentreeId === "number" &&
+      rentrees.some((rentree) => rentree.id === defaultRentreeId)
+    ) {
+      setSelectedRentreeId(defaultRentreeId);
+      return;
+    }
+
+    setSelectedRentreeId(rentrees[0]?.id ?? null);
+  }, [defaultRentreeId, rentreesQuery.data, selectedRentreeId]);
 
   const dashboardQuery = useGetRentreeDashboard(selectedRentreeId);
   const chatguisQuery = useGetRentreeChatguis(selectedRentreeId);

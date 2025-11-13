@@ -132,23 +132,29 @@ export const DataGrid = ({
       <div className="flex flex-col gap-4 mb-6 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex flex-col gap-1">
           <p className="text-xs uppercase text-muted-foreground">Rentrée</p>
-      <Select
-        value={
-          selectedRentreeId !== null ? selectedRentreeId.toString() : "none"
-        }
-        onValueChange={handleRentreeChange}
-        disabled={rentreesLoading}
-      >
+          <Select
+            value={
+              selectedRentreeId !== null ? selectedRentreeId.toString() : "none"
+            }
+            onValueChange={handleRentreeChange}
+            disabled={rentreesLoading}
+          >
             <SelectTrigger className="w-[260px] bg-background">
               <SelectValue
-                placeholder={rentreesLoading ? "Chargement..." : "Sélectionner une rentrée"}
+                placeholder={
+                  rentreesLoading
+                    ? "Chargement..."
+                    : "Sélectionner une rentrée"
+                }
               />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="none">Toutes les rentrées</SelectItem>
               {rentrees.map((rentree) => (
                 <SelectItem key={rentree.id} value={rentree.id.toString()}>
-                  {rentree.nom_rentree ?? formatDate(rentree.date_rentree) ?? `Rentrée #${rentree.id}`}
+                  {rentree.nom_rentree ??
+                    formatDate(rentree.date_rentree) ??
+                    `Rentrée #${rentree.id}`}
                 </SelectItem>
               ))}
             </SelectContent>
