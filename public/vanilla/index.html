@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Student & Fruits Management - Vanilla</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        color-scheme: light;
+      }
+      body {
+        font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          sans-serif;
+      }
+      pre {
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+      .btn-primary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 0.75rem;
+        background: #22c55e;
+        padding: 0.75rem 1rem;
+        font-weight: 600;
+        color: #0f172a;
+        transition: background 150ms ease, box-shadow 150ms ease;
+      }
+      .btn-primary:hover {
+        background: #34d399;
+      }
+      .btn-primary:focus {
+        outline: 2px solid #22c55e;
+        outline-offset: 2px;
+      }
+      .btn-secondary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 0.75rem;
+        background: #0f172a;
+        padding: 0.75rem 1rem;
+        font-weight: 600;
+        color: #e2e8f0;
+        border: 1px solid #1f2937;
+        transition: background 150ms ease, box-shadow 150ms ease;
+      }
+      .btn-secondary:hover {
+        background: #111827;
+      }
+      .btn-secondary:focus {
+        outline: 2px solid #22c55e;
+        outline-offset: 2px;
+      }
+      .btn-danger {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 0.75rem;
+        background: #fb7185;
+        padding: 0.75rem 1rem;
+        font-weight: 600;
+        color: white;
+        transition: background 150ms ease, box-shadow 150ms ease;
+      }
+      .btn-danger:hover {
+        background: #fda4af;
+      }
+      .btn-danger:focus {
+        outline: 2px solid #fb7185;
+        outline-offset: 2px;
+      }
+      .input {
+        width: 100%;
+        border-radius: 0.75rem;
+        background: #0f172a;
+        border: 1px solid #1f2937;
+        padding: 0.75rem 1rem;
+        color: #e2e8f0;
+        outline: none;
+      }
+      .input::placeholder {
+        color: #94a3b8;
+      }
+      .input:focus {
+        border-color: #22c55e;
+        box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.5);
+      }
+    </style>
+  </head>
+  <body class="bg-slate-950 text-slate-100 min-h-screen">
+    <div class="bg-gradient-to-b from-slate-900 via-slate-900/80 to-slate-950">
+      <header class="max-w-6xl mx-auto px-6 pt-10 pb-8 space-y-6">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <p class="text-xs uppercase tracking-[0.3em] text-emerald-300/70">
+              Student & Fruits Management API
+            </p>
+            <h1 class="text-3xl md:text-4xl font-bold text-white mt-2">
+              Interface vanilla (HTML + JS + Tailwind)
+            </h1>
+            <p class="text-slate-300 mt-2 max-w-3xl">
+              Cette interface légère consomme la nouvelle API (étudiants, fruits, suivis,
+              rentrées). Elle fonctionne sans dépendances React : uniquement du HTML, du
+              JavaScript et Tailwind via CDN.
+            </p>
+          </div>
+          <div class="shrink-0 flex items-center gap-3 bg-emerald-900/30 border border-emerald-500/40 px-4 py-3 rounded-xl shadow-lg shadow-emerald-500/10">
+            <span class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-200 font-semibold">API</span>
+            <div>
+              <p class="text-sm text-emerald-100 font-semibold">OpenAPI 3.1</p>
+              <p class="text-xs text-emerald-200/80">Students, Fruits, Followups, Rentrees</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-slate-900/70 border border-slate-800 rounded-2xl p-4 md:p-5 shadow-xl shadow-black/30">
+          <div class="flex flex-col md:flex-row gap-3 md:items-end">
+            <label class="flex-1" for="api-base">
+              <div class="flex items-center justify-between gap-2">
+                <span class="text-sm font-semibold text-white">URL de base de l'API</span>
+                <button id="reset-base" class="text-xs text-emerald-200 hover:text-emerald-100 font-medium">Réinitialiser</button>
+              </div>
+              <input
+                id="api-base"
+                class="mt-2 w-full rounded-xl bg-slate-800 border border-slate-700 px-4 py-3 text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-400"
+                placeholder="https://api.exemple.com"
+                value="http://localhost:8000"
+              />
+            </label>
+            <button
+              id="ping-api"
+              class="md:w-48 inline-flex items-center justify-center rounded-xl bg-emerald-500 px-4 py-3 font-semibold text-slate-950 transition hover:bg-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-300"
+            >
+              Vérifier l'API
+            </button>
+          </div>
+          <p id="api-status" class="mt-3 text-sm text-slate-300">Prêt à tester vos routes.</p>
+        </div>
+      </header>
+    </div>
+
+    <main class="max-w-6xl mx-auto px-6 pb-16 space-y-10 -mt-8">
+      <section class="grid md:grid-cols-2 gap-6">
+        <article class="rounded-2xl bg-slate-900/80 border border-slate-800 p-5 shadow-lg shadow-black/30">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="h-10 w-10 rounded-xl bg-emerald-500/20 text-emerald-200 font-semibold flex items-center justify-center">1</div>
+            <div>
+              <p class="text-sm uppercase tracking-wide text-slate-400">Étudiants</p>
+              <h2 class="text-lg font-semibold text-white">Recherche & listing</h2>
+            </div>
+          </div>
+          <div class="space-y-3">
+            <div class="flex flex-col gap-2">
+              <button id="students-all" class="btn-secondary">Charger tous les étudiants</button>
+              <div class="flex flex-col gap-2 sm:flex-row">
+                <input id="student-search" class="input" placeholder="Rechercher par nom" />
+                <button id="students-search" class="btn-secondary sm:w-48">Recherche nom</button>
+              </div>
+              <div class="flex flex-col gap-2 sm:flex-row">
+                <select id="student-gender" class="input">
+                  <option value="">Genre (tous)</option>
+                  <option value="F">F</option>
+                  <option value="M">M</option>
+                </select>
+                <button id="students-gender" class="btn-secondary sm:w-48">Filtrer genre</button>
+              </div>
+              <div class="flex flex-col gap-2 sm:flex-row">
+                <input id="student-id" class="input" placeholder="ID étudiant" inputmode="numeric" />
+                <button id="students-detail" class="btn-secondary sm:w-48">Détails & historique</button>
+              </div>
+              <div class="flex flex-col gap-2 sm:flex-row">
+                <input id="student-min-abs" class="input" placeholder="Absences min (par défaut 3)" inputmode="numeric" />
+                <button id="students-abs" class="btn-secondary sm:w-48">Absences multiples</button>
+              </div>
+            </div>
+            <div>
+              <p id="students-status" class="text-sm text-slate-400">Dernière requête : aucune.</p>
+              <pre id="students-output" class="mt-3 bg-slate-950/70 border border-slate-800 rounded-xl p-3 text-xs text-slate-100 min-h-[140px]">En attente de données...</pre>
+            </div>
+          </div>
+        </article>
+
+        <article class="rounded-2xl bg-slate-900/80 border border-slate-800 p-5 shadow-lg shadow-black/30">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="h-10 w-10 rounded-xl bg-emerald-500/20 text-emerald-200 font-semibold flex items-center justify-center">2</div>
+            <div>
+              <p class="text-sm uppercase tracking-wide text-slate-400">Étudiants</p>
+              <h2 class="text-lg font-semibold text-white">Création & mise à jour</h2>
+            </div>
+          </div>
+          <form id="student-form" class="space-y-3">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <input id="student-firstname" class="input" placeholder="Prénom" />
+              <input id="student-jdsn" class="input" placeholder="JDSN" />
+              <select id="student-form-gender" class="input">
+                <option value="">Genre</option>
+                <option value="F">F</option>
+                <option value="M">M</option>
+              </select>
+              <input id="student-update-id" class="input" placeholder="ID pour mise à jour (optionnel)" inputmode="numeric" />
+            </div>
+            <div class="flex flex-wrap gap-3">
+              <button type="submit" class="btn-primary">Créer / mettre à jour</button>
+              <button type="button" id="student-delete" class="btn-danger">Supprimer (ID requis)</button>
+            </div>
+            <p id="student-form-status" class="text-sm text-slate-400">Prêt.</p>
+          </form>
+        </article>
+      </section>
+
+      <section class="grid md:grid-cols-2 gap-6">
+        <article class="rounded-2xl bg-slate-900/80 border border-slate-800 p-5 shadow-lg shadow-black/30">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="h-10 w-10 rounded-xl bg-emerald-500/20 text-emerald-200 font-semibold flex items-center justify-center">3</div>
+            <div>
+              <p class="text-sm uppercase tracking-wide text-slate-400">Fruits</p>
+              <h2 class="text-lg font-semibold text-white">Recherche & filtres</h2>
+            </div>
+          </div>
+          <div class="space-y-3">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <input id="fruit-name" class="input" placeholder="Nom (search)" />
+              <input id="fruit-location" class="input" placeholder="Localisation" />
+              <input id="fruit-status" class="input" placeholder="Statut" />
+              <input id="fruit-indo" class="input" placeholder="Indo" inputmode="numeric" />
+            </div>
+            <div class="flex flex-wrap gap-3">
+              <button id="fruits-all" class="btn-secondary">Charger fruits</button>
+              <button id="fruits-search" class="btn-secondary">Recherche nom</button>
+              <button id="fruits-location" class="btn-secondary">Filtrer par localisation</button>
+              <button id="fruits-status" class="btn-secondary">Filtrer par statut</button>
+            </div>
+            <div class="flex flex-col gap-2 sm:flex-row">
+              <input id="fruit-id" class="input" placeholder="ID fruit" inputmode="numeric" />
+              <div class="flex gap-2 sm:w-60">
+                <button id="fruit-detail" class="btn-secondary flex-1">Détails</button>
+                <button id="fruit-delete" class="btn-danger flex-1">Supprimer</button>
+              </div>
+            </div>
+            <div>
+              <p id="fruits-status" class="text-sm text-slate-400">Dernière requête : aucune.</p>
+              <pre id="fruits-output" class="mt-3 bg-slate-950/70 border border-slate-800 rounded-xl p-3 text-xs text-slate-100 min-h-[140px]">En attente de données...</pre>
+            </div>
+          </div>
+        </article>
+
+        <article class="rounded-2xl bg-slate-900/80 border border-slate-800 p-5 shadow-lg shadow-black/30">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="h-10 w-10 rounded-xl bg-emerald-500/20 text-emerald-200 font-semibold flex items-center justify-center">4</div>
+            <div>
+              <p class="text-sm uppercase tracking-wide text-slate-400">Fruits</p>
+              <h2 class="text-lg font-semibold text-white">Création & suivi</h2>
+            </div>
+          </div>
+          <form id="fruit-form" class="space-y-3">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <input id="fruit-firstname" class="input" placeholder="Nom" />
+              <input id="fruit-status-field" class="input" placeholder="Statut" />
+              <input id="fruit-location-field" class="input" placeholder="Localisation" />
+              <input id="fruit-indo-field" class="input" placeholder="Indo" inputmode="numeric" />
+              <input id="fruit-tagui" class="input" placeholder="Tagui point" />
+              <input id="fruit-evangelisation" class="input" placeholder="Date évangélisation (YYYY-MM-DD)" />
+              <input id="fruit-subae" class="input" placeholder="Date subae (YYYY-MM-DD)" />
+              <input id="fruit-student-id" class="input" placeholder="ID étudiant évangélisateur" inputmode="numeric" />
+              <input id="fruit-rentree-id" class="input" placeholder="ID rentrée" inputmode="numeric" />
+              <input id="fruit-notes" class="input" placeholder="Notes" />
+              <input id="fruit-update-id" class="input" placeholder="ID pour mise à jour (optionnel)" inputmode="numeric" />
+            </div>
+            <div class="flex flex-wrap gap-3">
+              <button type="submit" class="btn-primary">Créer / mettre à jour</button>
+              <label class="inline-flex items-center gap-2 text-sm text-slate-200">
+                <input id="fruit-duplicates" type="checkbox" class="h-4 w-4 rounded border-slate-600 bg-slate-800" checked />
+                Vérifier les doublons
+              </label>
+            </div>
+            <p id="fruit-form-status" class="text-sm text-slate-400">Prêt.</p>
+          </form>
+
+          <div class="mt-6 border-t border-slate-800 pt-4 space-y-3">
+            <h3 class="text-sm font-semibold text-white">Suivis Fruit-Étudiant</h3>
+            <form id="followup-form" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <input id="followup-fruit" class="input" placeholder="ID fruit" inputmode="numeric" required />
+              <input id="followup-student" class="input" placeholder="ID étudiant" inputmode="numeric" required />
+              <input id="followup-date" class="input sm:col-span-2" placeholder="Dernière date (ISO, optionnel)" />
+              <div class="flex flex-wrap gap-2 sm:col-span-2">
+                <button type="submit" class="btn-secondary">Créer suivi</button>
+                <button type="button" id="followup-by-student" class="btn-secondary">Suivis par étudiant</button>
+                <button type="button" id="followup-by-fruit" class="btn-secondary">Suivis par fruit</button>
+                <button type="button" id="followup-recent" class="btn-secondary">Suivis récents (7j)</button>
+              </div>
+            </form>
+            <p id="followup-status" class="text-sm text-slate-400">Aucun appel effectué.</p>
+            <pre id="followup-output" class="bg-slate-950/70 border border-slate-800 rounded-xl p-3 text-xs text-slate-100 min-h-[120px]">En attente de données...</pre>
+          </div>
+        </article>
+      </section>
+
+      <section class="grid md:grid-cols-2 gap-6">
+        <article class="rounded-2xl bg-slate-900/80 border border-slate-800 p-5 shadow-lg shadow-black/30">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="h-10 w-10 rounded-xl bg-emerald-500/20 text-emerald-200 font-semibold flex items-center justify-center">5</div>
+            <div>
+              <p class="text-sm uppercase tracking-wide text-slate-400">Rentrées</p>
+              <h2 class="text-lg font-semibold text-white">Liste & dashboards</h2>
+            </div>
+          </div>
+          <div class="space-y-3">
+            <div class="flex flex-wrap gap-3">
+              <input id="rentree-id" class="input" placeholder="ID rentrée" inputmode="numeric" />
+              <button id="rentrees-all" class="btn-secondary">Charger toutes les rentrées</button>
+              <button id="rentree-detail" class="btn-secondary">Détails</button>
+              <button id="rentree-dashboard" class="btn-secondary">Dashboard</button>
+              <button id="rentrees-dashboards" class="btn-secondary">Dashboards (toutes)</button>
+              <button id="rentree-chatguis" class="btn-secondary">Chatguis</button>
+              <button id="rentree-fruits" class="btn-secondary">Fruits par rentrée</button>
+            </div>
+            <div>
+              <p id="rentrees-status" class="text-sm text-slate-400">Dernière requête : aucune.</p>
+              <pre id="rentrees-output" class="mt-3 bg-slate-950/70 border border-slate-800 rounded-xl p-3 text-xs text-slate-100 min-h-[140px]">En attente de données...</pre>
+            </div>
+          </div>
+        </article>
+
+        <article class="rounded-2xl bg-slate-900/80 border border-slate-800 p-5 shadow-lg shadow-black/30">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="h-10 w-10 rounded-xl bg-emerald-500/20 text-emerald-200 font-semibold flex items-center justify-center">6</div>
+            <div>
+              <p class="text-sm uppercase tracking-wide text-slate-400">Rentrées</p>
+              <h2 class="text-lg font-semibold text-white">Création</h2>
+            </div>
+          </div>
+          <form id="rentree-form" class="space-y-3">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <input id="rentree-date" class="input" placeholder="Date rentrée (YYYY-MM-DD)" required />
+              <input id="rentree-debut" class="input" placeholder="Début chatgui (YYYY-MM-DD)" required />
+              <input id="rentree-fin" class="input" placeholder="Fin chatgui (YYYY-MM-DD)" required />
+              <input id="rentree-nom" class="input" placeholder="Nom (optionnel)" />
+              <input id="rentree-desc" class="input sm:col-span-2" placeholder="Description (optionnel)" />
+            </div>
+            <button type="submit" class="btn-primary">Créer une rentrée</button>
+            <p id="rentree-form-status" class="text-sm text-slate-400">Prêt.</p>
+          </form>
+        </article>
+      </section>
+    </main>
+
+    <script src="./vanilla.js"></script>
+  </body>
+</html>
