@@ -1,5 +1,12 @@
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
+## Vanilla HTML interface
+
+A lightweight HTML/JS page is available at `public/vanilla/index.html` to exercise the
+Student & Fruits Management API without React. Serve the repository (for example with
+`python -m http.server 3000`) and open
+`http://localhost:3000/public/vanilla/index.html`.
+
 ## Getting Started
 
 First, run the development server:
